@@ -11,10 +11,9 @@ interface AudioPlayerProps {
   audioUrl: string;
   title: string;
   author: string;
-  onTimeUpdate?: (time: number) => void;
 }
 
-export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlayerProps) => {
+export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -23,6 +22,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
 
+  // API-related state
   const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -30,10 +30,12 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
   const answerAudioRef = useRef<HTMLAudioElement>(null);
   const [isPlayingAnswer, setIsPlayingAnswer] = useState(false);
 
+  // Add transcript state
   const [transcript, setTranscript] = useState('');
 
+  // Load transcript on mount
   useEffect(() => {
-    fetch('/mostlyawesome podcast transcript.txt')
+    fetch('/vercel_acq2_transcript.txt')
       .then(response => response.text())
       .then(text => setTranscript(text))
       .catch(error => console.error('Error loading transcript:', error));
@@ -42,15 +44,13 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.addEventListener("timeupdate", () => {
-        const currentTime = audioRef.current?.currentTime || 0;
-        setCurrentTime(currentTime);
-        onTimeUpdate?.(currentTime);
+        setCurrentTime(audioRef.current?.currentTime || 0);
       });
       audioRef.current.addEventListener("loadedmetadata", () => {
         setDuration(audioRef.current?.duration || 0);
       });
     }
-  }, [onTimeUpdate]);
+  }, []);
 
   const togglePlay = () => {
     if (audioRef.current) {
@@ -103,6 +103,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
+  // Add voice Q&A functions
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -156,6 +157,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
       mediaRecorderRef.current.start();
       setIsRecording(true);
 
+      // Pause podcast playback while recording
       if (audioRef.current && isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
@@ -177,6 +179,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
     }
   };
 
+  // Update the Join In button handler
   const handleJoinIn = () => {
     if (isRecording) {
       stopRecording();
@@ -185,8 +188,10 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
     }
   };
 
+  // Add handler for when answer finishes playing
   const handleAnswerFinished = () => {
     setIsPlayingAnswer(false);
+    // Resume podcast playback
     if (audioRef.current) {
       audioRef.current.play();
       setIsPlaying(true);
@@ -203,6 +208,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
         onPause={handleAnswerFinished}
       />
       <div className="container mx-auto max-w-4xl">
+        {/* Progress Bar Section */}
         <div className="mb-4">
           <Slider
             value={[currentTime]}
@@ -216,12 +222,15 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
           </div>
         </div>
 
+        {/* Controls Section */}
         <div className="grid grid-cols-3 items-center gap-4">
+          {/* Title and Author - Left */}
           <div className="text-left">
             <h3 className="font-bold text-base truncate">{author}</h3>
             <p className="text-sm text-gray-500 truncate">{title}</p>
           </div>
 
+          {/* Play and Ask Question Buttons - Center */}
           <div className="flex items-center justify-center gap-6">
             <button
               onClick={() => skipTime(-10)}
@@ -269,6 +278,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlay
             </Button>
           </div>
 
+          {/* Volume Controls - Right */}
           <div className="flex items-center gap-2 justify-end">
             <button onClick={toggleMute}>
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}

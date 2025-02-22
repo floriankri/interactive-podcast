@@ -1,24 +1,35 @@
-
-import { supabase } from '../lib/supabase'
+const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 
 export const askQuestion = async (
   question: string,
   transcript: string
 ): Promise<string> => {
   try {
-    const { data: { session } } = await supabase.auth.getSession()
-    const { data, error } = await supabase.functions.invoke('ask-question', {
-      body: { question, transcript },
+    const response = await fetch(MISTRAL_API_URL, {
+      method: 'POST',
       headers: {
-        Authorization: `Bearer ${session?.access_token}`
-      }
-    })
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_MISTRAL_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'mistral-medium',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that answers questions about a podcast transcript. Use the provided transcript as context for your answers.',
+          },
+          {
+            role: 'user',
+            content: `Context: ${transcript}\n\nQuestion: ${question}`,
+          },
+        ],
+      }),
+    });
 
-    if (error) throw error
-
-    return data.choices[0].message.content || 'No response received'
+    const data = await response.json();
+    return data.choices[0].message.content || 'No response received';
   } catch (error) {
-    console.error('Error:', error)
-    throw error
+    console.error('Error:', error);
+    throw error;
   }
-}
+};
