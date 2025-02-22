@@ -1,7 +1,9 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, HelpCircle } from "lucide-react";
 import { Slider } from "./ui/slider";
+import { Button } from "./ui/button";
+import { useToast } from "./ui/use-toast";
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -16,6 +18,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (audioRef.current) {
@@ -37,6 +40,17 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
       }
       setIsPlaying(!isPlaying);
     }
+  };
+
+  const handleAskQuestion = () => {
+    if (audioRef.current && isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+    toast({
+      title: "Ask a Question",
+      description: "Playback paused. What would you like to ask about this segment?",
+    });
   };
 
   const toggleMute = () => {
@@ -81,6 +95,15 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
             <h3 className="font-semibold truncate">{title}</h3>
             <p className="text-sm text-gray-600 truncate">{author}</p>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={handleAskQuestion}
+          >
+            <HelpCircle size={16} />
+            Ask a Question
+          </Button>
           <div className="flex items-center gap-2 min-w-[150px]">
             <button onClick={toggleMute}>
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
