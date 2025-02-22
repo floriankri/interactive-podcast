@@ -1,5 +1,6 @@
+
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, HelpCircle } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, Hand } from "lucide-react";
 import { Slider } from "./ui/slider";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
@@ -156,8 +157,8 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
               className="gap-2"
               onClick={handleAskQuestion}
             >
-              <HelpCircle size={16} />
-              Ask a Question
+              <Hand size={16} />
+              Join in!
             </Button>
           </div>
 
