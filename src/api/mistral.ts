@@ -1,4 +1,6 @@
 
+import { supabase } from "@/integrations/supabase/client";
+
 const MISTRAL_API_URL = 'https://api.mistral.ai/v1/chat/completions';
 
 export const askQuestion = async (
@@ -6,13 +8,13 @@ export const askQuestion = async (
   transcript: string
 ): Promise<string> => {
   try {
-    const { data: { value: apiKey }, error } = await supabase
+    const { data, error } = await supabase
       .from('secrets')
       .select('value')
       .eq('name', 'VITE_MISTRAL_API_KEY')
       .single();
 
-    if (error || !apiKey) {
+    if (error || !data?.value) {
       throw new Error('Could not retrieve Mistral API key');
     }
 
@@ -20,7 +22,7 @@ export const askQuestion = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${data.value}`
       },
       body: JSON.stringify({
         model: 'mistral-medium',
@@ -37,8 +39,8 @@ export const askQuestion = async (
       }),
     });
 
-    const data = await response.json();
-    return data.choices[0].message.content || 'No response received';
+    const responseData = await response.json();
+    return responseData.choices[0].message.content || 'No response received';
   } catch (error) {
     console.error('Error:', error);
     throw error;

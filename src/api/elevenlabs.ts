@@ -6,13 +6,13 @@ const VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Using "Adam" voice
 
 export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
   try {
-    const { data: { value: apiKey }, error } = await supabase
+    const { data, error } = await supabase
       .from('secrets')
       .select('value')
       .eq('name', 'VITE_ELEVENLABS_API_KEY')
       .single();
 
-    if (error || !apiKey) {
+    if (error || !data?.value) {
       throw new Error('Could not retrieve ElevenLabs API key');
     }
 
@@ -20,7 +20,7 @@ export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'xi-api-key': apiKey,
+        'xi-api-key': data.value,
       },
       body: JSON.stringify({
         text,
