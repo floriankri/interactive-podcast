@@ -19,18 +19,25 @@ serve(async (req) => {
 
   try {
     const audioBlob = await req.blob()
+    const apiKey = Deno.env.get('HUGGINGFACE_API_KEY')
     
+    if (!apiKey) {
+      throw new Error('HUGGINGFACE_API_KEY not found')
+    }
+
+    console.log('Making request to Hugging Face API...')
     const response = await fetch(HUGGINGFACE_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('HUGGINGFACE_API_KEY')}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'audio/webm',
       },
       body: audioBlob,
     })
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
+      const errorText = await response.text()
+      throw new Error(`Hugging Face API error: ${response.status} - ${errorText}`)
     }
 
     const result = await response.json()
@@ -38,7 +45,11 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('Function error:', error)
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: error.toString()
+    }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
