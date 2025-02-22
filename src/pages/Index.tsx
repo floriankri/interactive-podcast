@@ -1,8 +1,8 @@
-
-import { useState } from "react";
+import { useEffect, useState } from 'react';
 import { SearchBar } from "@/components/SearchBar";
 import { PodcastCard } from "@/components/PodcastCard";
 import { AudioPlayer } from "@/components/AudioPlayer";
+import { PodcastPlayer } from '@/components/PodcastPlayer';
 
 // Mock data (replace with real API calls later)
 const mockPodcasts = [
@@ -52,20 +52,29 @@ const mockPodcasts = [
 
 const Index = () => {
   const [selectedPodcast, setSelectedPodcast] = useState<typeof mockPodcasts[0] | null>(null);
+  const [transcript, setTranscript] = useState('');
+
+  useEffect(() => {
+    // Fetch the transcript when the component mounts
+    fetch('/vercel_acq2_transcript.txt')
+      .then(response => response.text())
+      .then(text => setTranscript(text))
+      .catch(error => console.error('Error loading transcript:', error));
+  }, []);
 
   return (
     <div className="min-h-screen pb-32">
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-primary/10 to-background pt-20 pb-32">
         <div className="page-container text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fadeIn">
-            Discover Your Next Favorite Podcast
+          <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            Podcast Q&A Demo
           </h1>
-          <p className="text-lg text-gray-600 mb-8 animate-fadeIn" style={{ animationDelay: "0.1s" }}>
-            Search through millions of podcasts and find the perfect one for you
-          </p>
-          <div className="flex justify-center animate-fadeIn" style={{ animationDelay: "0.2s" }}>
-            <SearchBar />
+          <div className="mt-8">
+            <PodcastPlayer 
+              audioSrc="/vercel_acq2.mp3" 
+              transcript={transcript}
+            />
           </div>
         </div>
       </div>
