@@ -2,39 +2,51 @@ import { PodcastCard } from "@/components/PodcastCard";
 import { mockPodcastSeries } from "@/data/mockData";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { TranscriptDisplay } from "@/components/TranscriptDisplay";
+import { BlueShader } from "@/components/BlueShader";
 import { useState } from "react";
 
 const Index = () => {
   const [currentTime, setCurrentTime] = useState(0);
+  const [displayedWord, setDisplayedWord] = useState("");
+  const [currentSpeaker, setCurrentSpeaker] = useState("");
+  const [uniqueSpeakers, setUniqueSpeakers] = useState<Set<string>>(new Set());
   // Use the first episode of the first series as the default content
   const defaultSeries = mockPodcastSeries[0];
   const defaultEpisode = defaultSeries.episodes[0];
 
   return (
     <div className="min-h-screen">
+      <BlueShader currentWord={displayedWord} position="left" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
+      <BlueShader currentWord={displayedWord} position="center" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
+      <BlueShader currentWord={displayedWord} position="right" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
       {/* Hero Section */}
-      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center pointer-events-none">
         <div className="text-center max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn">
+          <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn mix-blend-multiply">
             Interactive Podcast Experience
           </h1>
-          <div className="animate-fadeIn z-50 relative">
+          <div className="animate-fadeIn pointer-events-auto">
             <AudioPlayer
               audioUrl={defaultEpisode.audioUrl}
               title={defaultEpisode.title}
               author={defaultSeries.author}
               onTimeUpdate={setCurrentTime}
             />
-            <TranscriptDisplay currentTime={currentTime} />
+            <TranscriptDisplay 
+              currentTime={currentTime} 
+              onWordUpdate={setDisplayedWord}
+              onSpeakerUpdate={setCurrentSpeaker}
+              onSpeakersUpdate={setUniqueSpeakers}
+            />
           </div>
         </div>
       </div>
 
       {/* Podcasts Grid */}
-      <div className="page-container py-[150px]">
+      <div className="page-container py-[150px] pointer-events-auto">
         <div className="flex items-center gap-2 mb-6">
-          <h2 className="text-2xl font-semibold">Popular Podcasts</h2>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary uppercase tracking-wide">
+          <h2 className="text-2xl font-semibold mix-blend-multiply">Popular Podcasts</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary uppercase tracking-wide mix-blend-multiply">
             Beta
           </span>
         </div>

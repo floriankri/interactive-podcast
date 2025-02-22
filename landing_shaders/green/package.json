@@ -1,0 +1,12 @@
+{
+  "name": "green-squares",
+  "version": "1.0.0",
+  "description": "Interactive green squares visualization",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+} 

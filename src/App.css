@@ -40,3 +40,45 @@
 .read-the-docs {
   color: #888;
 }
+
+@keyframes blink {
+  from, to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: currentColor;
+  }
+}
+
+.animate-blink {
+  animation: blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.typing-animation-container {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.typing-animation {
+  display: block;
+  width: fit-content;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid;
+  animation: typing var(--typing-duration, 3s) steps(var(--steps, 40)) forwards,
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: currentColor }
+}

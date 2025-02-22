@@ -1,0 +1,172 @@
+SHADER COLOR VISUALIZATION - TECHNICAL MANUAL
+==========================================
+
+This manual explains the structure and functionality of the color visualization projects (green, orange, pink, and light blue versions).
+Each version runs on a different port but shares the same core functionality with different color schemes.
+
+Project Structure
+----------------
+Each color folder (green, orange, pink, blue) contains the following files:
+- index.html
+- main.js
+- shaders.js
+- server.js
+- package.json
+
+File Breakdown
+-------------
+
+1. index.html
+-------------
+Purpose: Sets up the basic webpage structure and loads necessary JavaScript files.
+Key components:
+- Canvas element for WebGL rendering
+- Minimal CSS for fullscreen display
+- Script imports for shaders.js and main.js
+- Clean, minimal styling with a light gray background
+
+2. shaders.js
+-------------
+Purpose: Contains the WebGL shader programs that handle the visual effects.
+Components:
+a) vertexShaderSource:
+   - Handles vertex positioning
+   - Passes position data to fragment shader
+   - Manages projection and model view matrices
+
+b) fragmentShaderSource:
+   - Creates the circle shape
+   - Handles color mixing and blending
+   - Implements soft edges and grain effects
+   - Controls opacity and blur transitions
+   - Uses distance fields for circle rendering
+
+3. main.js
+----------
+Purpose: Core application logic and WebGL initialization.
+Key classes:
+
+a) Circle class:
+   - Manages individual circle properties (position, size, color)
+   - Handles lifetime and fade animations (1.5 seconds)
+   - Implements overlap detection between circles
+   - Controls size shrinking during fade-out (shrinks to 50% of original size)
+
+b) CircleVisualizer class:
+   - Initializes WebGL context and shaders
+   - Manages circle spawning and animation
+   - Handles canvas resizing
+   - Controls background shape
+   - Implements WebGL rendering pipeline
+   - Manages color variations and blending
+
+Spawning Mechanism
+-----------------
+The spawning system is designed to create visually pleasing, overlapping patterns:
+
+1. Trigger:
+   - Click event spawns 1-3 circles randomly
+   - Number of circles per click: random between 1 and 3
+
+2. Circle Properties:
+   - Fixed size: 0.523 units
+   - Initial opacity: 1.0
+   - Initial blur: 0.15
+   - Lifetime: 1500ms (1.5 seconds)
+   - Size animation: Shrinks to 50% during fade
+
+3. Spawn Area:
+   - Boundary: 0.9 units from center (adjusted for circle size)
+   - Coordinates: Random position within boundary
+   - Distribution: Uniform across spawn area
+
+4. Collision Detection:
+   - Method: Distance-based overlap calculation
+   - Opacity threshold: Only checks circles with opacity > 0.8
+   - Overlap limit: 40% (0.4) maximum allowed overlap
+   - Maximum attempts: 30 tries to find valid position
+
+5. Color Generation:
+   Each version has its base color with random variations:
+   - Green:  RGB(0.408 ±0.1, 0.682 ±0.1, 0.678 ±0.1)
+   - Orange: RGB(0.910 ±0.1, 0.651 ±0.1, 0.482 ±0.1)
+   - Pink:   RGB(0.690 ±0.1, 0.294 ±0.1, 0.518 ±0.1)
+   - Blue:   RGB(0.455 ±0.1, 0.675 ±0.1, 0.780 ±0.1)
+
+6. Animation:
+   - Opacity: Fades from 1.0 to 0.0 over lifetime
+   - Blur: Increases from 0.15 to 1.0 over lifetime
+   - Size: Smoothly decreases to 50% of initial size
+
+7. Background:
+   Each version has a permanent background circle:
+   - Size: 90% of viewport height with 2:3 ratio
+   - Opacity: 10% of base color
+   - Blur: Fixed at 50%
+
+4. server.js
+-----------
+Purpose: Simple Express server to serve the application.
+Features:
+- Static file serving
+- Port configuration (unique for each color version)
+- Minimal Express setup for development
+
+5. package.json
+--------------
+Purpose: Node.js project configuration
+Contains:
+- Project metadata
+- Dependencies (Express)
+- Start script configuration
+- Version information
+
+Color Configurations
+------------------
+Each version uses different RGB values:
+- Green:  #68aead (0.408, 0.682, 0.678)
+- Orange: #e8a67b (0.910, 0.651, 0.482)
+- Pink:   #b04b84 (0.690, 0.294, 0.518)
+- Blue:   #74acc7 (0.455, 0.675, 0.780)
+
+Port Assignments
+--------------
+- Green:  5003
+- Orange: 5004
+- Pink:   5005
+- Blue:   5006
+
+Technical Features
+----------------
+1. Visual Effects:
+   - Soft edge rendering
+   - Grain texture effect
+   - Fade in/out animations
+   - Size transitions
+   - Multiply blend mode
+   - Anti-aliasing control
+
+2. Performance Optimizations:
+   - Efficient WebGL buffer usage
+   - Smart circle cleanup
+   - Optimized overlap detection
+   - Controlled animation frames
+
+Usage Instructions
+----------------
+1. Install dependencies:
+   npm install
+
+2. Start any version:
+   cd [color] && npm start
+
+3. Open in browser:
+   http://localhost:[port]
+
+4. Interact:
+   - Click anywhere to spawn 1-3 circles
+   - Circles fade out over 1.5 seconds
+   - Circles shrink while fading
+   - Colors vary slightly for visual interest
+
+Note: All versions can run simultaneously on different ports. 

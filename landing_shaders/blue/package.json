@@ -1,0 +1,12 @@
+{
+  "name": "light-blue-circles",
+  "version": "1.0.0",
+  "description": "Interactive light blue circles visualization",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+} 
