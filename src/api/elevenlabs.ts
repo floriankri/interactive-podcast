@@ -7,19 +7,20 @@ const supabase = createClient(
 
 export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
   try {
-    const { data, error } = await supabase.functions.invoke('text-to-speech', {
-      body: { text }
+    const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/text-to-speech`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ text })
     })
 
-    if (error) throw error
-
-    // Convert base64 back to ArrayBuffer
-    const binaryString = atob(data.audio)
-    const bytes = new Uint8Array(binaryString.length)
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
-    return bytes.buffer
+
+    return await response.arrayBuffer()
   } catch (error) {
     console.error('Error converting text to speech:', error)
     throw error
