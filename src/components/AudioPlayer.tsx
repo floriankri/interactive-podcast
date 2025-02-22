@@ -102,8 +102,8 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
         <div className="grid grid-cols-3 items-center gap-4">
           {/* Title and Author - Left */}
           <div className="text-left">
-            <h3 className="font-semibold truncate">{title}</h3>
-            <p className="text-sm text-gray-600 truncate">{author}</p>
+            <p className="text-sm text-gray-500 truncate">{title}</p>
+            <h3 className="font-bold text-base truncate">{author}</h3>
           </div>
 
           {/* Play and Ask Question Buttons - Center */}
