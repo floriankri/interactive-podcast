@@ -14,10 +14,16 @@ interface TranscriptDisplayProps {
 export const TranscriptDisplay = ({ currentTime }: TranscriptDisplayProps) => {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [currentSegment, setCurrentSegment] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
   useEffect(() => {
     fetch('/mostlyawesome podcast transcript.txt')
-      .then(response => response.text())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.text();
+      })
       .then(text => {
         // Parse the transcript file
         const lines = text.split('\n');
@@ -54,8 +60,12 @@ export const TranscriptDisplay = ({ currentTime }: TranscriptDisplayProps) => {
         });
         
         setSegments(parsedSegments);
+        setError("");
       })
-      .catch(error => console.error('Error loading transcript:', error));
+      .catch(error => {
+        console.error('Error loading transcript:', error);
+        setError("Unable to load transcript. Please ensure the transcript file is available.");
+      });
   }, []);
 
   useEffect(() => {
@@ -68,6 +78,15 @@ export const TranscriptDisplay = ({ currentTime }: TranscriptDisplayProps) => {
       setCurrentSegment(current.text);
     }
   }, [currentTime, segments]);
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto mt-8 p-4 bg-destructive/10 rounded-lg shadow-sm">
+        <h3 className="text-sm font-medium text-destructive mb-2">Error</h3>
+        <p className="text-base leading-relaxed">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto mt-8 p-4 bg-primary/5 rounded-lg shadow-sm">
