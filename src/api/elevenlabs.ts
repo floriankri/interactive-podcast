@@ -1,17 +1,13 @@
 const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
 const VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Using "Adam" voice, you can change this
 
-import { getSecret } from "@/utils/secrets";
-
-export const elevenLabsApiKey = await getSecret('VITE_ELEVENLABS_API_KEY');
-
 export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
   try {
     const response = await fetch(`${ELEVENLABS_API_URL}/${VOICE_ID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'xi-api-key': `${elevenLabsApiKey}`,
+        'xi-api-key': `${import.meta.env.VITE_ELEVENLABS_API_KEY}`,
       },
       body: JSON.stringify({
         text,
@@ -32,4 +28,4 @@ export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
     console.error('Error converting text to speech:', error);
     throw error;
   }
-};
+}; 
