@@ -18,7 +18,7 @@ export const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
     }
 
     const result = await response.json();
-    console.log('Transcription result:', result); // For debugging
+    console.log('Transcription result:', result); // For debugg ing
     
     if (Array.isArray(result)) {
       return result[0]?.text || '';

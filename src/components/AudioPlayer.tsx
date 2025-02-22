@@ -35,7 +35,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
 
   // Load transcript on mount
   useEffect(() => {
-    fetch('/vercel_acq2_transcript.txt')
+    fetch('/mostlyawesome podcast transcript.txt')
       .then(response => response.text())
       .then(text => setTranscript(text))
       .catch(error => console.error('Error loading transcript:', error));
