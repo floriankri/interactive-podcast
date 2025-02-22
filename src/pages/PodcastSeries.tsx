@@ -44,7 +44,7 @@ const PodcastSeries = () => {
         <div className="space-y-4">
           {series.episodes.map(episode => <div key={episode.id} onClick={() => setSelectedEpisode(episode)} className="p-4 rounded-lg border border-gray-200 hover:border-primary/50 cursor-pointer transition-colors">
               <div className="flex items-center gap-4">
-                <button className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-colors">
+                <button className="h-10 w-10 rounded-full flex items-center justify-center text-primary transition-colors bg-black/0 text-base font-normal">
                   <Play size={20} />
                 </button>
                 <div className="flex-1 min-w-0">
