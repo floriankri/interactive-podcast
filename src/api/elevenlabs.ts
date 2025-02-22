@@ -1,26 +1,17 @@
-
-import { supabase } from "@/integrations/supabase/client";
-
 const ELEVENLABS_API_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
-const VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Using "Adam" voice
+const VOICE_ID = 'pNInz6obpgDQGcFmaJgB'; // Using "Adam" voice, you can change this
+
+import { getSecret } from "@/utils/secrets";
+
+export const elevenLabsApiKey = await getSecret('VITE_ELEVENLABS_API_KEY');
 
 export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
   try {
-    const { data, error } = await supabase
-      .from('secrets')
-      .select('value')
-      .eq('name', 'VITE_ELEVENLABS_API_KEY')
-      .single();
-
-    if (error || !data?.value) {
-      throw new Error('Could not retrieve ElevenLabs API key');
-    }
-
     const response = await fetch(`${ELEVENLABS_API_URL}/${VOICE_ID}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'xi-api-key': data.value,
+        'xi-api-key': `${elevenLabsApiKey}`,
       },
       body: JSON.stringify({
         text,
