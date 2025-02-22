@@ -1,6 +1,5 @@
-
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, HelpCircle, SkipBack, SkipForward } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, HelpCircle } from "lucide-react";
 import { Slider } from "./ui/slider";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
@@ -116,26 +115,37 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
           </div>
 
           {/* Play and Ask Question Buttons - Center */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-6">
             <button
               onClick={() => skipTime(-10)}
-              className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-opacity"
+              className="relative flex items-center justify-center"
             >
-              <SkipBack size={20} />
+              <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
+                <span className="text-xs font-medium">10</span>
+              </div>
             </button>
             
             <button
               onClick={togglePlay}
-              className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+              className="h-12 flex items-center justify-center text-primary"
             >
-              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+              {isPlaying ? (
+                <div className="flex gap-1">
+                  <div className="h-6 w-2 bg-primary"></div>
+                  <div className="h-6 w-2 bg-primary"></div>
+                </div>
+              ) : (
+                <Play size={24} className="ml-1" />
+              )}
             </button>
 
             <button
               onClick={() => skipTime(10)}
-              className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-opacity"
+              className="relative flex items-center justify-center"
             >
-              <SkipForward size={20} />
+              <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
+                <span className="text-xs font-medium">10</span>
+              </div>
             </button>
 
             <Button
