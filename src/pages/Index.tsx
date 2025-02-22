@@ -1,25 +1,11 @@
-
 import { PodcastCard } from "@/components/PodcastCard";
+import { mockPodcastSeries } from "@/data/mockData";
 import { AudioPlayer } from "@/components/AudioPlayer";
-import { useQuery } from "@tanstack/react-query";
-import { podcastFeeds } from "@/config/podcastFeeds";
-import { fetchPodcastFeed } from "@/utils/rssUtils";
-import type { PodcastSeries } from "@/types/podcast";
 
 const Index = () => {
-  const { data: podcasts = [], isLoading } = useQuery({
-    queryKey: ['podcasts'],
-    queryFn: async () => {
-      const feedPromises = podcastFeeds.map(feed => 
-        fetchPodcastFeed(feed.rssUrl, feed.id)
-      );
-      return Promise.all(feedPromises);
-    }
-  });
-
   // Use the first episode of the first series as the default content
-  const defaultSeries = podcasts[0];
-  const defaultEpisode = defaultSeries?.episodes[0];
+  const defaultSeries = mockPodcastSeries[0];
+  const defaultEpisode = defaultSeries.episodes[0];
 
   return (
     <div className="min-h-screen">
@@ -29,15 +15,13 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn">
             Interactive Podcast Experience
           </h1>
-          {defaultEpisode && (
-            <div className="animate-fadeIn z-50 relative">
-              <AudioPlayer
-                audioUrl={defaultEpisode.audioUrl}
-                title={defaultEpisode.title}
-                author={defaultSeries.author}
-              />
-            </div>
-          )}
+          <div className="animate-fadeIn z-50 relative">
+            <AudioPlayer
+              audioUrl={defaultEpisode.audioUrl}
+              title={defaultEpisode.title}
+              author={defaultSeries.author}
+            />
+          </div>
         </div>
       </div>
 
@@ -50,21 +34,17 @@ const Index = () => {
           </span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {isLoading ? (
-            <div>Loading podcasts...</div>
-          ) : (
-            podcasts.map((podcast) => (
-              <div key={podcast.id} className="animate-fadeIn">
-                <PodcastCard
-                  id={podcast.id}
-                  title={podcast.title}
-                  author={podcast.author}
-                  description={podcast.description}
-                  coverImage={podcast.coverImage}
-                />
-              </div>
-            ))
-          )}
+          {mockPodcastSeries.map((podcast) => (
+            <div key={podcast.id} className="animate-fadeIn">
+              <PodcastCard
+                id={podcast.id}
+                title={podcast.title}
+                author={podcast.author}
+                description={podcast.description}
+                coverImage={podcast.coverImage}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>
