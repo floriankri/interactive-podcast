@@ -32,7 +32,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
 
   // Add transcript state
   const [transcript, setTranscript] = useState('');
-  
+
   // Load transcript on mount
   useEffect(() => {
     fetch('/vercel_acq2_transcript.txt')
@@ -156,7 +156,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
 
       mediaRecorderRef.current.start();
       setIsRecording(true);
-      
+
       // Pause podcast playback while recording
       if (audioRef.current && isPlaying) {
         audioRef.current.pause();
@@ -200,9 +200,9 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 animate-slideUp">
-      <audio ref={audioRef} src="/vercel_acq2.mp3" />
-      <audio 
-        ref={answerAudioRef} 
+      <audio ref={audioRef} src={audioUrl} />
+      <audio
+        ref={answerAudioRef}
         className="hidden"
         onEnded={handleAnswerFinished}
         onPause={handleAnswerFinished}
@@ -240,7 +240,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
                 <span className="text-xs font-medium">10</span>
               </div>
             </button>
-            
+
             <button
               onClick={togglePlay}
               className="h-12 w-12 flex items-center justify-center"
