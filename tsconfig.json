@@ -17,5 +17,6 @@
     "strictNullChecks": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true
-  }
+  },
+  "exclude": ["supabase/functions/**/*"]
 }

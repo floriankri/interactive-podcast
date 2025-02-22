@@ -1,34 +1,27 @@
-const HUGGINGFACE_API_URL = 'https://api-inference.huggingface.co/models/openai/whisper-large-v3';
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+)
 
 export const transcribeAudio = async (audioBlob: Blob): Promise<string> => {
   try {
-    // Send the raw audio blob directly
-    const response = await fetch(HUGGINGFACE_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${import.meta.env.VITE_HUGGINGFACE_API_KEY}`,
-        'Content-Type': 'audio/webm',  // Match the audio format we're recording
-      },
-      body: audioBlob, // Send the raw audio blob
-    });
+    const { data, error } = await supabase.functions.invoke('transcribe', {
+      body: audioBlob
+    })
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Network response was not ok' }));
-      throw new Error(error.error || `HTTP error! status: ${response.status}`);
-    }
+    if (error) throw error
 
-    const result = await response.json();
-    console.log('Transcription result:', result); // For debugg ing
-    
-    if (Array.isArray(result)) {
-      return result[0]?.text || '';
-    } else if (typeof result === 'object' && result.text) {
-      return result.text;
+    if (Array.isArray(data)) {
+      return data[0]?.text || ''
+    } else if (typeof data === 'object' && data.text) {
+      return data.text
     }
     
-    return '';
+    return ''
   } catch (error) {
-    console.error('Error transcribing audio:', error);
-    throw error;
+    console.error('Error transcribing audio:', error)
+    throw error
   }
-}; 
+} 
