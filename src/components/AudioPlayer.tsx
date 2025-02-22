@@ -30,6 +30,17 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
   const answerAudioRef = useRef<HTMLAudioElement>(null);
   const [isPlayingAnswer, setIsPlayingAnswer] = useState(false);
 
+  // Add transcript state
+  const [transcript, setTranscript] = useState('');
+  
+  // Load transcript on mount
+  useEffect(() => {
+    fetch('/vercel_acq2_transcript.txt')
+      .then(response => response.text())
+      .then(text => setTranscript(text))
+      .catch(error => console.error('Error loading transcript:', error));
+  }, []);
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.addEventListener("timeupdate", () => {
@@ -118,7 +129,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
         try {
           const transcribedText = await transcribeAudio(audioBlob);
           if (transcribedText && transcribedText.trim()) {
-            const answer = await askQuestion(transcribedText, "");
+            const answer = await askQuestion(transcribedText, transcript);
             if (answer) {
               const audioData = await textToSpeech(answer);
               if (answerAudioRef.current && audioData) {
@@ -135,7 +146,6 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
             title: "Error",
             description: "There was an error processing your question. Please try again.",
           });
-          // Resume podcast on error
           if (audioRef.current) {
             audioRef.current.play();
             setIsPlaying(true);
@@ -190,7 +200,7 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 animate-slideUp">
-      <audio ref={audioRef} src={audioUrl} />
+      <audio ref={audioRef} src="/vercel_acq2.mp3" />
       <audio 
         ref={answerAudioRef} 
         className="hidden"
