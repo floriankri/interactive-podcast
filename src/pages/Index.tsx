@@ -28,7 +28,12 @@ const Index = () => {
 
       {/* Podcasts Grid */}
       <div className="page-container">
-        <h2 className="text-2xl font-semibold mb-6">Popular Podcasts</h2>
+        <div className="flex items-center gap-2 mb-6">
+          <h2 className="text-2xl font-semibold">Popular Podcasts</h2>
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary uppercase tracking-wide">
+            Beta
+          </span>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {mockPodcastSeries.map((podcast) => (
             <div key={podcast.id} className="animate-fadeIn">
