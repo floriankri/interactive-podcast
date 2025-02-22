@@ -12,15 +12,6 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 animate-fadeIn">
             Interactive Podcast Experience
           </h1>
-          <p className="text-lg text-gray-600 mb-4 animate-fadeIn" style={{ animationDelay: "0.1s" }}>
-            Search through millions of podcasts and find the perfect one for you
-          </p>
-          <p className="text-lg text-primary mb-8 animate-fadeIn" style={{ animationDelay: "0.15s" }}>
-            Ask questions anytime during playback and get instant voice responses
-          </p>
-          <div className="flex justify-center animate-fadeIn" style={{ animationDelay: "0.2s" }}>
-            <SearchBar />
-          </div>
         </div>
       </div>
 
