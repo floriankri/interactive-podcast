@@ -231,55 +231,6 @@ export const mockPodcastSeries: PodcastSeries[] = [
     ]
   },
   {
-    id: 5,
-    title: "All In with Daniel Giordano",
-    author: "Daniel Giordano",
-    description: "The All-In Podcast Show is the home to the top Entrepreneurs, Innovators and World Changers sharing their breakthrough moments and how they are changing the world. Our focus is being All-In on the four areas of life: faith, family, finances, and health. We will bring mentors into your world who can help you find balance and build a bold life of excellence with your host Daniel Giordano. Ask yourself is it time to get off the sidelines and step into your greatness? Join us at allinpodcast.com where we define success and give you advice on how to be all in. Make sure to catch the free gift from our guest.",
-    coverImage: "https://d3t3ozftmdmh3i.cloudfront.net/production/podcast_uploaded_nologo/3341773/3341773-1612907279864-47814d804aa98.jpg",
-    episodes: [
-      {
-        id: 1,
-        title: "102: Jeremy Miner, 7th Level Founder and Chairman",
-        description: "The biggest problem in sales is … not knowing what the problem is. Jeremy Miner built his career on a science-based understanding of what drives prospects. As founder of 7th Level, he teaches others to manifest sales using his NEPQ (Neuro-Emotional Persuasion Questioning) framework, leveraging universal principles to attract outcomes and neutralize resistance.",
-        duration: "35:31",
-        audioUrl: "https://anchor.fm/s/1483ba94/podcast/play/64804493/https://d3ctxlq1ktw2nl.cloudfront.net/staging/2023-1-10/8bdbfa5e-2113-6a2c-e752-1e64d19bb14a.m4a",
-        publishedAt: "Feb 10, 2023"
-      },
-      {
-        id: 2,
-        title: "101: Udo Erasmus, Founder of Udo’s Choice Products",
-        description: "Udo Erasmus shares his journey of turning personal pain into a global sales success story. His mission to educate about flax oil led to the creation of Udo’s Choice Products, a holistic health business with game-changing results.",
-        duration: "35:22",
-        audioUrl: "https://anchor.fm/s/1483ba94/podcast/play/63656935/https://d3ctxlq1ktw2nl.cloudfront.net/staging/2023-0-18/cc32ff39-5f74-cf2c-e1f6-4fc55aaabfdc.m4a",
-        publishedAt: "Jan 18, 2023"
-      },
-      {
-        id: 3,
-        title: "100: Ben Golden, CEO and Owner of IRS Trouble Solvers",
-        description: "This episode tackles tax season with Ben Golden, who specializes in navigating tricky IRS situations. He offers strategies to resolve outstanding tax problems and prevent future issues, helping people pay the right amount without overpaying.",
-        duration: "21:24",
-        audioUrl: "https://anchor.fm/s/1483ba94/podcast/play/58415726/https://d3ctxlq1ktw2nl.cloudfront.net/staging/2022-9-1/288702484-44100-2-7133024b9baf9.m4a",
-        publishedAt: "Oct 01, 2022"
-      },
-      {
-        id: 4,
-        title: "99: Rob Kosberg, CEO of Best Seller Publishing",
-        description: "Rob Kosberg discusses how publishing can boost personal credibility and business growth. He explains the strategy behind his book, 'Publish. Promote. Profit.', and why books are powerful tools for lead generation and brand building.",
-        duration: "24:59",
-        audioUrl: "https://anchor.fm/s/1483ba94/podcast/play/58415440/https://d3ctxlq1ktw2nl.cloudfront.net/staging/2022-9-1/288701243-44100-2-69e0c74da47c4.m4a",
-        publishedAt: "Oct 01, 2022"
-      },
-      {
-        id: 5,
-        title: "98: Jessica Yarbrough, Business Coach and Consultant",
-        description: "Jessica Yarbrough shares her approach to business consulting, which combines self-discovery with strategic coaching. She helps entrepreneurs showcase their services, target high-paying customers, and overcome growth bottlenecks.",
-        duration: "20:10",
-        audioUrl: "https://anchor.fm/s/1483ba94/podcast/play/58407490/https://d3ctxlq1ktw2nl.cloudfront.net/staging/2022-9-1/288675177-44100-2-085dfa58b1efe.m4a",
-        publishedAt: "Oct 01, 2022"
-      }
-    ]
-  },
-  {
     id: 6,
     title: "Masters of Scale",
     author: "WaitWhat",
@@ -425,5 +376,55 @@ export const mockPodcastSeries: PodcastSeries[] = [
         publishedAt: "Nov 13, 2024"
       }
     ]
-  }    
+  },
+  {
+    id: 9,
+    title: "Pivot",
+    author: "New York Magazine",
+    description: "Every Tuesday and Friday, tech journalist Kara Swisher and NYU Professor Scott Galloway offer sharp, unfiltered insights into the biggest stories in tech, business, and politics. They make bold predictions, pick winners and losers, and bicker and banter like no one else. After all, with great power comes great scrutiny. From New York Magazine and the Vox Media Podcast Network.",
+    coverImage: "https://megaphone.imgix.net/podcasts/d6280242-e5c9-11e8-a7e3-d766bb7d2d3e/image/uploads_2F1589209751803-3cf2fk1zbft-d7b74cb4d52d7b18877546f240df7151_2FPivot_TileArt_FINAL.png?ixlib=rails-4.3.1&max-w=3000&max-h=3000&fit=crop&auto=format,compress",
+    episodes: [
+      {
+        id: 1,
+        title: "DOGE’s Chaos Strategy, X’s New Valuation, and Guest Co-Host Katie Drummond",
+        description: "Kara is joined by guest co-host Katie Drummond of WIRED! They discuss DOGE, Elon Musk’s leadership, and X's valuation at $44 billion. The conversation covers Steve Bannon’s views, cost-cutting at X, and what’s next for Elon’s empire.",
+        duration: "67:22",
+        audioUrl: "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP8152091120.mp3?updated=1740092040",
+        publishedAt: "Feb 21, 2025"
+      },
+      {
+        id: 2,
+        title: "On with Kara Swisher: Why Ben Stiller Made Severance",
+        description: "Ben Stiller joins Kara to discuss his journey with Severance, the show's themes on technology, trauma, and identity, and his reaction to Elon Musk’s criticism. They also chat about political art and Stiller’s perspective on today’s culture.",
+        duration: "64:58",
+        audioUrl: "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP1962616603.mp3?updated=1739238846",
+        publishedAt: "Feb 18, 2025"
+      },
+      {
+        id: 3,
+        title: "Trump’s Putin Call, Inflation Rises, and Sam Altman Strikes Back at Elon Musk",
+        description: "Kara and Scott analyze Trump’s call with Putin, rising inflation, and Sam Altman’s criticism of Elon Musk. They also explore China’s AI advances threatening Tesla and Scott’s bold prediction for Tesla’s future.",
+        duration: "59:00",
+        audioUrl: "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP9142089603.mp3?updated=1739489167",
+        publishedAt: "Feb 14, 2025"
+      },
+      {
+        id: 4,
+        title: "Elon's OpenAI Bid, Trump's Judicial Strategy, and DOGE's Shock and Awe",
+        description: "Kara and Scott respond to Elon Musk’s criticism of them, discuss his $97 billion bid for OpenAI, Trump’s strategic moves against the judiciary, and the latest in the DOGE saga.",
+        duration: "81:43",
+        audioUrl: "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP6758419197.mp3?updated=1739245660",
+        publishedAt: "Feb 11, 2025"
+      },
+      {
+        id: 5,
+        title: "Elon Pushback, Trump's Distraction Trap, and Disney Earnings",
+        description: "Kara and Scott break down Elon Musk's power struggles, Trump’s Gaza strategy as a distraction, and the latest earnings from Disney, Alphabet, and Spotify. They explore political dynamics and economic shifts shaping the tech landscape.",
+        duration: "74:36",
+        audioUrl: "https://www.podtrac.com/pts/redirect.mp3/pdst.fm/e/chtbl.com/track/524GE/traffic.megaphone.fm/VMP2472777992.mp3?updated=1738902893",
+        publishedAt: "Feb 07, 2025"
+      }
+    ]
+  }
+      
 ];
