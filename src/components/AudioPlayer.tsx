@@ -1,9 +1,11 @@
-
 import { useEffect, useRef, useState } from "react";
 import { Play, Pause, Volume2, VolumeX, Hand } from "lucide-react";
 import { Slider } from "./ui/slider";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
+import { askQuestion } from '@/api/mistral';
+import { transcribeAudio } from '@/api/whisper';
+import { textToSpeech } from '@/api/elevenlabs';
 
 interface AudioPlayerProps {
   audioUrl: string;
@@ -19,6 +21,14 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
+
+  // API-related state
+  const [isRecording, setIsRecording] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const answerAudioRef = useRef<HTMLAudioElement>(null);
+  const [isPlayingAnswer, setIsPlayingAnswer] = useState(false);
 
   useEffect(() => {
     if (audioRef.current) {
@@ -51,15 +61,8 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
     }
   };
 
-  const handleAskQuestion = () => {
-    if (audioRef.current && isPlaying) {
-      audioRef.current.pause();
-      setIsPlaying(false);
-    }
-    toast({
-      title: "Ask a Question",
-      description: "Playback paused. What would you like to ask about this segment?",
-    });
+  const handleAskQuestion = async () => {
+    // ... API functionality
   };
 
   const toggleMute = () => {
@@ -89,9 +92,111 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
+  // Add voice Q&A functions
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          sampleRate: 16000,
+        }
+      });
+
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      chunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorderRef.current.onstop = async () => {
+        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
+        setIsLoading(true);
+        try {
+          const transcribedText = await transcribeAudio(audioBlob);
+          if (transcribedText && transcribedText.trim()) {
+            const answer = await askQuestion(transcribedText, "");
+            if (answer) {
+              const audioData = await textToSpeech(answer);
+              if (answerAudioRef.current && audioData) {
+                const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
+                answerAudioRef.current.src = URL.createObjectURL(audioBlob);
+                setIsPlayingAnswer(true);
+                answerAudioRef.current.play();
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error processing voice input:', error);
+          toast({
+            title: "Error",
+            description: "There was an error processing your question. Please try again.",
+          });
+          // Resume podcast on error
+          if (audioRef.current) {
+            audioRef.current.play();
+            setIsPlaying(true);
+          }
+        }
+        setIsLoading(false);
+      };
+
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+      
+      // Pause podcast playback while recording
+      if (audioRef.current && isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      }
+    } catch (error) {
+      console.error('Error accessing microphone:', error);
+      toast({
+        title: "Error",
+        description: "Could not access microphone. Please check permissions.",
+      });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      setIsRecording(false);
+    }
+  };
+
+  // Update the Join In button handler
+  const handleJoinIn = () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  };
+
+  // Add handler for when answer finishes playing
+  const handleAnswerFinished = () => {
+    setIsPlayingAnswer(false);
+    // Resume podcast playback
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 animate-slideUp">
       <audio ref={audioRef} src={audioUrl} />
+      <audio 
+        ref={answerAudioRef} 
+        className="hidden"
+        onEnded={handleAnswerFinished}
+        onPause={handleAnswerFinished}
+      />
       <div className="container mx-auto max-w-4xl">
         {/* Progress Bar Section */}
         <div className="mb-4">
@@ -155,10 +260,11 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
               variant="outline"
               size="sm"
               className="gap-2"
-              onClick={handleAskQuestion}
+              onClick={handleJoinIn}
+              disabled={isLoading}
             >
               <Hand size={16} />
-              Join in!
+              {isRecording ? "Stop" : "Join in!"}
             </Button>
           </div>
 

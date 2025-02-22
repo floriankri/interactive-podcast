@@ -1,10 +1,9 @@
 import { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { askQuestion } from '@/api/mistral';
 import { transcribeAudio } from '@/api/whisper';
-import { Play, Pause, Mic, MicOff } from 'lucide-react';
+import { Mic, MicOff } from 'lucide-react';
 import { textToSpeech } from '@/api/elevenlabs';
 
 interface PodcastPlayerProps {
@@ -41,15 +40,11 @@ export const PodcastPlayer = ({ audioSrc, transcript }: PodcastPlayerProps) => {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 16000, // Whisper works well with 16kHz
+          sampleRate: 16000,
         }
       });
 
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: 'audio/webm',
-        audioBitsPerSecond: 128000 // 128 kbps for good quality
-      });
-      
+      mediaRecorderRef.current = new MediaRecorder(stream);
       chunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (e) => {
@@ -62,32 +57,25 @@ export const PodcastPlayer = ({ audioSrc, transcript }: PodcastPlayerProps) => {
         const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
         setIsLoading(true);
         try {
-          console.log('Audio blob size:', audioBlob.size);
           const transcribedText = await transcribeAudio(audioBlob);
-          console.log('Transcribed text:', transcribedText);
-          
           if (transcribedText && transcribedText.trim()) {
             setQuestion(transcribedText);
             const answer = await askQuestion(transcribedText, transcript);
             setAnswer(answer);
-            // Automatically play the answer
             await playAnswerAudio(answer);
-          } else {
-            setAnswer('Sorry, I could not transcribe the audio. Please try speaking more clearly and try again.');
           }
         } catch (error) {
           console.error('Error processing voice input:', error);
-          setAnswer(`Sorry, there was an error processing your voice input: ${error.message}`);
+          setAnswer('Sorry, there was an error processing your voice input.');
         }
         setIsLoading(false);
       };
 
-      // Record in smaller chunks
-      mediaRecorderRef.current.start(500);
+      mediaRecorderRef.current.start();
       setIsRecording(true);
     } catch (error) {
       console.error('Error accessing microphone:', error);
-      setAnswer('Error accessing microphone. Please make sure you have granted microphone permissions.');
+      setAnswer('Error accessing microphone. Please check permissions.');
     }
   };
 
@@ -99,12 +87,25 @@ export const PodcastPlayer = ({ audioSrc, transcript }: PodcastPlayerProps) => {
     }
   };
 
+  const handleAskQuestion = async () => {
+    if (!question.trim()) return;
+
+    setIsLoading(true);
+    try {
+      const answer = await askQuestion(question, transcript);
+      setAnswer(answer);
+      await playAnswerAudio(answer);
+    } catch (error) {
+      console.error('Error asking question:', error);
+      setAnswer('Sorry, there was an error processing your question.');
+    }
+    setIsLoading(false);
+  };
+
   const playAnswerAudio = async (text: string) => {
     try {
       setIsLoading(true);
       const audioData = await textToSpeech(text);
-      
-      // Convert ArrayBuffer to Blob
       const audioBlob = new Blob([audioData], { type: 'audio/mpeg' });
       const audioUrl = URL.createObjectURL(audioBlob);
       
@@ -120,74 +121,61 @@ export const PodcastPlayer = ({ audioSrc, transcript }: PodcastPlayerProps) => {
     }
   };
 
-  const handleAskQuestion = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!question.trim()) return;
-
-    setIsLoading(true);
-    try {
-      const answer = await askQuestion(question, transcript);
-      setAnswer(answer);
-      // Automatically play the answer
-      await playAnswerAudio(answer);
-    } catch (error) {
-      console.error('Error asking question:', error);
-      setAnswer('Sorry, there was an error processing your question.');
-    }
-    setIsLoading(false);
-  };
-
   return (
-    <Card className="p-6 space-y-4 max-w-2xl mx-auto">
-      <div className="flex items-center gap-4">
+    <div className="w-full max-w-2xl mx-auto space-y-6">
+      {/* Audio Player */}
+      <div className="rounded-2xl bg-[#202020] overflow-hidden">
         <audio 
-          ref={audioRef} 
+          ref={audioRef}
           src={audioSrc}
-          controls 
+          controls
           className="w-full"
         />
       </div>
 
-      <form onSubmit={handleAskQuestion} className="space-y-4">
-        <div className="flex gap-2">
-          <Input
-            type="text"
-            placeholder="Ask a question about the podcast..."
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            className="flex-1"
-          />
-          <Button
-            type="button"
-            variant={isRecording ? "destructive" : "secondary"}
-            onClick={isRecording ? stopRecording : startRecording}
-          >
-            {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-          </Button>
-        </div>
-        <Button 
-          type="submit" 
-          disabled={isLoading}
-          className="w-full"
+      {/* Question Input */}
+      <div className="relative">
+        <Input
+          type="text"
+          placeholder="Ask a question about the podcast..."
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          className="w-full bg-[#202020] border-none rounded-full py-6 px-6 text-gray-300 placeholder:text-gray-500"
+        />
+        <Button
+          variant={isRecording ? "destructive" : "ghost"}
+          onClick={isRecording ? stopRecording : startRecording}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
         >
-          {isLoading ? 'Thinking...' : 'Ask Question'}
+          {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
         </Button>
-      </form>
+      </div>
 
+      {/* Ask Button */}
+      <Button
+        onClick={handleAskQuestion}
+        disabled={isLoading || !question.trim()}
+        className="w-full bg-[#303030] hover:bg-[#404040] text-gray-200 rounded-full py-6 text-lg"
+      >
+        Ask Question
+      </Button>
+
+      {/* Answer Section */}
       {answer && (
-        <div className="mt-4 p-4 bg-secondary/50 rounded-lg">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold">Answer:</h3>
+        <div className="mt-8 bg-[#202020] rounded-2xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl text-gray-200">Answer</h3>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => playAnswerAudio(answer)}
               disabled={isLoading}
+              className="text-gray-400 hover:text-gray-200"
             >
-              🔊 Play Answer
+              🔊 Play
             </Button>
           </div>
-          <p className="text-gray-700 whitespace-pre-wrap">{answer}</p>
+          <p className="text-gray-400 leading-relaxed">{answer}</p>
           <audio
             ref={answerAudioRef}
             onEnded={() => setIsPlayingAnswer(false)}
@@ -196,6 +184,6 @@ export const PodcastPlayer = ({ audioSrc, transcript }: PodcastPlayerProps) => {
           />
         </div>
       )}
-    </Card>
+    </div>
   );
 }; 
