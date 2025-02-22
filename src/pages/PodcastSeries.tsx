@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Play } from "lucide-react";
+import { ArrowLeft, Play, HelpCircle } from "lucide-react";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { mockPodcastSeries } from "@/data/mockData";
 import type { Episode } from "@/types/podcast";
@@ -39,7 +39,13 @@ const PodcastSeries = () => {
             <div>
               <h1 className="text-3xl font-bold mb-2">{series.title}</h1>
               <p className="text-lg text-gray-600 mb-4">{series.author}</p>
-              <p className="text-gray-600">{series.description}</p>
+              <p className="text-gray-600 mb-4">{series.description}</p>
+              <div className="flex items-center gap-2 text-primary">
+                <HelpCircle size={20} />
+                <p className="text-sm">
+                  Interactive Experience: Click "Ask a Question" during playback to get instant voice answers
+                </p>
+              </div>
             </div>
           </div>
         </div>
