@@ -11,9 +11,10 @@ interface AudioPlayerProps {
   audioUrl: string;
   title: string;
   author: string;
+  onTimeUpdate?: (time: number) => void;
 }
 
-export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
+export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -44,13 +45,15 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.addEventListener("timeupdate", () => {
-        setCurrentTime(audioRef.current?.currentTime || 0);
+        const time = audioRef.current?.currentTime || 0;
+        setCurrentTime(time);
+        onTimeUpdate?.(time);
       });
       audioRef.current.addEventListener("loadedmetadata", () => {
         setDuration(audioRef.current?.duration || 0);
       });
     }
-  }, []);
+  }, [onTimeUpdate]);
 
   const togglePlay = () => {
     if (audioRef.current) {
