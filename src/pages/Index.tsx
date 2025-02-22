@@ -1,4 +1,3 @@
-
 import { PodcastCard } from "@/components/PodcastCard";
 import { mockPodcastSeries } from "@/data/mockData";
 import { AudioPlayer } from "@/components/AudioPlayer";
