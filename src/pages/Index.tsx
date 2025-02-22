@@ -16,7 +16,7 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn">
             Interactive Podcast Experience
           </h1>
-          <div className="animate-fadeIn">
+          <div className="animate-fadeIn z-50 relative">
             <AudioPlayer
               audioUrl={defaultEpisode.audioUrl}
               title={defaultEpisode.title}
