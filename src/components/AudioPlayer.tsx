@@ -127,15 +127,15 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
             
             <button
               onClick={togglePlay}
-              className="h-12 flex items-center justify-center text-primary"
+              className="h-12 flex items-center justify-center"
             >
               {isPlaying ? (
-                <div className="flex gap-1">
-                  <div className="h-6 w-2 bg-primary"></div>
-                  <div className="h-6 w-2 bg-primary"></div>
+                <div className="flex gap-1.5">
+                  <div className="h-9 w-3 bg-foreground"></div>
+                  <div className="h-9 w-3 bg-foreground"></div>
                 </div>
               ) : (
-                <Play size={24} className="ml-1" />
+                <Play size={36} fill="black" className="ml-1" />
               )}
             </button>
 
