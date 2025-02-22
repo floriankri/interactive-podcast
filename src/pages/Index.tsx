@@ -64,6 +64,8 @@ const Index = () => {
           ))}
         </div>
       </div>
+      {/* Add padding at the bottom for the fixed media player */}
+      <div className="pb-[120px]"></div>
     </div>
   );
 };
