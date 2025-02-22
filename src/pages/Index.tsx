@@ -11,12 +11,12 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-primary/10 to-background pt-20 pb-32">
-        <div className="page-container text-center">
+      <div className="min-h-screen bg-gradient-to-b from-primary/10 to-background flex flex-col items-center justify-center">
+        <div className="text-center max-w-4xl mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn">
             Interactive Podcast Experience
           </h1>
-          <div className="max-w-4xl mx-auto">
+          <div className="animate-fadeIn">
             <AudioPlayer
               audioUrl={defaultEpisode.audioUrl}
               title={defaultEpisode.title}
