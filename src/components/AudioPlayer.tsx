@@ -84,17 +84,37 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
     <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 animate-slideUp">
       <audio ref={audioRef} src={audioUrl} />
       <div className="container mx-auto max-w-4xl">
+        {/* Progress Bar Section */}
+        <div className="mb-4">
+          <Slider
+            value={[currentTime]}
+            max={duration}
+            step={1}
+            onValueChange={handleTimeChange}
+          />
+          <div className="flex justify-between text-sm mt-1">
+            <span>{formatTime(currentTime)}</span>
+            <span>{formatTime(duration)}</span>
+          </div>
+        </div>
+
+        {/* Controls Section */}
         <div className="flex items-center gap-4">
+          {/* Play/Pause Button */}
           <button
             onClick={togglePlay}
             className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white hover:opacity-90 transition-opacity"
           >
             {isPlaying ? <Pause size={20} /> : <Play size={20} />}
           </button>
+
+          {/* Title and Author */}
           <div className="flex-1">
             <h3 className="font-semibold truncate">{title}</h3>
             <p className="text-sm text-gray-600 truncate">{author}</p>
           </div>
+
+          {/* Ask Question Button */}
           <Button
             variant="outline"
             size="sm"
@@ -104,6 +124,8 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
             <HelpCircle size={16} />
             Ask a Question
           </Button>
+
+          {/* Volume Controls */}
           <div className="flex items-center gap-2 min-w-[150px]">
             <button onClick={toggleMute}>
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
@@ -116,18 +138,6 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
               className="w-24"
             />
           </div>
-        </div>
-        <div className="mt-2">
-          <div className="flex justify-between text-sm mb-1">
-            <span>{formatTime(currentTime)}</span>
-            <span>{formatTime(duration)}</span>
-          </div>
-          <Slider
-            value={[currentTime]}
-            max={duration}
-            step={1}
-            onValueChange={handleTimeChange}
-          />
         </div>
       </div>
     </div>
