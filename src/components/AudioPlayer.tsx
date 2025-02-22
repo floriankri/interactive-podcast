@@ -116,21 +116,12 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
 
           {/* Play and Ask Question Buttons - Center */}
           <div className="flex items-center justify-center gap-6">
-            {/* Backward 10s button */}
             <button
               onClick={() => skipTime(-10)}
-              className="relative flex items-center justify-center group"
+              className="relative flex items-center justify-center"
             >
-              <div className="h-9 w-9 relative">
-                <div className="absolute inset-0 border-2 border-primary rounded-tl-full" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-medium text-primary">
-                  10
-                </div>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-0 h-0 
-                               border-l-[6px] border-l-transparent
-                               border-b-[8px] border-b-primary
-                               border-r-[6px] border-r-transparent
-                               rotate-[-90deg] origin-bottom" />
+              <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
+                <span className="text-xs font-medium">10</span>
               </div>
             </button>
             
@@ -150,21 +141,12 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
               </div>
             </button>
 
-            {/* Forward 10s button */}
             <button
               onClick={() => skipTime(10)}
-              className="relative flex items-center justify-center group"
+              className="relative flex items-center justify-center"
             >
-              <div className="h-9 w-9 relative">
-                <div className="absolute inset-0 border-2 border-primary rounded-tr-full" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xs font-medium text-primary">
-                  10
-                </div>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-0 h-0 
-                               border-l-[6px] border-l-transparent
-                               border-b-[8px] border-b-primary
-                               border-r-[6px] border-r-transparent
-                               rotate-90 origin-bottom" />
+              <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
+                <span className="text-xs font-medium">10</span>
               </div>
             </button>
 
