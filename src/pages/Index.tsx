@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SearchBar } from "@/components/SearchBar";
 import { PodcastCard } from "@/components/PodcastCard";
+import { mockPodcastSeries } from "@/data/mockData";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { PodcastPlayer } from '@/components/PodcastPlayer';
 
@@ -63,7 +64,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pb-32">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-primary/10 to-background pt-20 pb-32">
         <div className="page-container text-center">
@@ -83,27 +84,19 @@ const Index = () => {
       <div className="page-container">
         <h2 className="text-2xl font-semibold mb-6">Popular Podcasts</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {mockPodcasts.map((podcast) => (
+          {mockPodcastSeries.map((podcast) => (
             <div key={podcast.id} className="animate-fadeIn">
               <PodcastCard
+                id={podcast.id}
                 title={podcast.title}
                 author={podcast.author}
+                description={podcast.description}
                 coverImage={podcast.coverImage}
-                onClick={() => setSelectedPodcast(podcast)}
               />
             </div>
           ))}
         </div>
       </div>
-
-      {/* Audio Player */}
-      {selectedPodcast && (
-        <AudioPlayer
-          audioUrl={selectedPodcast.audioUrl}
-          title={selectedPodcast.title}
-          author={selectedPodcast.author}
-        />
-      )}
     </div>
   );
 };

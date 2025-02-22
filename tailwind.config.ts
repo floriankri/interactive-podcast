@@ -16,6 +16,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
+        domine: ["Domine", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
