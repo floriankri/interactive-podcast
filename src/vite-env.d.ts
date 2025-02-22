@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  readonly VITE_MISTRAL_API_KEY: string
+  // We keep this empty since we're not using env variables anymore
 }
 
 interface ImportMeta {
