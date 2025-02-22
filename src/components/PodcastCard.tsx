@@ -1,18 +1,20 @@
 
 import { PlayCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface PodcastCardProps {
+  id: number;
   title: string;
   author: string;
+  description: string;
   coverImage: string;
-  onClick: () => void;
 }
 
-export const PodcastCard = ({ title, author, coverImage, onClick }: PodcastCardProps) => {
+export const PodcastCard = ({ id, title, author, description, coverImage }: PodcastCardProps) => {
   return (
-    <div
-      onClick={onClick}
-      className="group relative overflow-hidden rounded-xl hover-scale cursor-pointer"
+    <Link
+      to={`/series/${id}`}
+      className="group relative overflow-hidden rounded-xl hover-scale block"
     >
       <div className="aspect-square overflow-hidden">
         <img
@@ -28,6 +30,6 @@ export const PodcastCard = ({ title, author, coverImage, onClick }: PodcastCardP
           <PlayCircle className="absolute bottom-4 right-4 text-white" size={24} />
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
