@@ -1,8 +1,12 @@
+
 import { PodcastCard } from "@/components/PodcastCard";
 import { mockPodcastSeries } from "@/data/mockData";
 import { AudioPlayer } from "@/components/AudioPlayer";
+import { TranscriptDisplay } from "@/components/TranscriptDisplay";
+import { useState } from "react";
 
 const Index = () => {
+  const [currentTime, setCurrentTime] = useState(0);
   // Use the first episode of the first series as the default content
   const defaultSeries = mockPodcastSeries[0];
   const defaultEpisode = defaultSeries.episodes[0];
@@ -20,7 +24,9 @@ const Index = () => {
               audioUrl={defaultEpisode.audioUrl}
               title={defaultEpisode.title}
               author={defaultSeries.author}
+              onTimeUpdate={setCurrentTime}
             />
+            <TranscriptDisplay currentTime={currentTime} />
           </div>
         </div>
       </div>
