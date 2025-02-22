@@ -99,34 +99,35 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
         </div>
 
         {/* Controls Section */}
-        <div className="flex items-center gap-4">
-          {/* Play/Pause Button */}
-          <button
-            onClick={togglePlay}
-            className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white hover:opacity-90 transition-opacity"
-          >
-            {isPlaying ? <Pause size={20} /> : <Play size={20} />}
-          </button>
-
-          {/* Title and Author */}
-          <div className="flex-1">
+        <div className="grid grid-cols-3 items-center gap-4">
+          {/* Title and Author - Left */}
+          <div className="text-left">
             <h3 className="font-semibold truncate">{title}</h3>
             <p className="text-sm text-gray-600 truncate">{author}</p>
           </div>
 
-          {/* Ask Question Button */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={handleAskQuestion}
-          >
-            <HelpCircle size={16} />
-            Ask a Question
-          </Button>
+          {/* Play and Ask Question Buttons - Center */}
+          <div className="flex items-center justify-center gap-4">
+            <button
+              onClick={togglePlay}
+              className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white hover:opacity-90 transition-opacity"
+            >
+              {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </button>
 
-          {/* Volume Controls */}
-          <div className="flex items-center gap-2 min-w-[150px]">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={handleAskQuestion}
+            >
+              <HelpCircle size={16} />
+              Ask a Question
+            </Button>
+          </div>
+
+          {/* Volume Controls - Right */}
+          <div className="flex items-center gap-2 justify-end">
             <button onClick={toggleMute}>
               {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
             </button>
