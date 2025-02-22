@@ -7,18 +7,14 @@ const supabase = createClient(
 
 export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
   try {
-    const { data: { session } } = await supabase.auth.getSession()
     const { data, error } = await supabase.functions.invoke('text-to-speech', {
-      body: { text },
-      headers: {
-        Authorization: `Bearer ${session?.access_token}`
-      }
+      body: { text }
     })
 
     if (error) throw error
 
-    // Convert the base64 string back to ArrayBuffer
-    const binaryString = atob(data)
+    // Convert base64 back to ArrayBuffer
+    const binaryString = atob(data.audio)
     const bytes = new Uint8Array(binaryString.length)
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i)

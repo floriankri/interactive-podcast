@@ -48,8 +48,12 @@ serve(async (req) => {
     }
 
     const audioBuffer = await response.arrayBuffer()
-    return new Response(audioBuffer, {
-      headers: { ...corsHeaders, 'Content-Type': 'audio/mpeg' },
+    // Convert ArrayBuffer to Base64
+    const uint8Array = new Uint8Array(audioBuffer)
+    const base64 = btoa(String.fromCharCode.apply(null, uint8Array))
+
+    return new Response(JSON.stringify({ audio: base64 }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   } catch (error) {
     console.error('Function error:', error)
