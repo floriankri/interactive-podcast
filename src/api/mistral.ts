@@ -16,7 +16,7 @@ export const askQuestion = async (
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that answers questions about a podcast transcript. Use the provided transcript as context for your answers. Give the answers as short as possible, and keep them concise as hell.',
+            content: 'You are a helpful assistant that answers questions about a podcast transcript. Use the provided transcript as context for your answers. Give the answers as short as possible, not more than 100 words.',
           },
           {
             role: 'user',
