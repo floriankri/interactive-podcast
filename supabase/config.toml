@@ -1,1 +1,9 @@
 project_id = "glpqxpdbjcpfqdaizxcc"
+
+[functions]
+[functions.transcribe]
+verify_jwt = false
+[functions.text-to-speech]
+verify_jwt = false
+[functions.ask-question]
+verify_jwt = false

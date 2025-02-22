@@ -10,8 +10,12 @@ export const askQuestion = async (
   transcript: string
 ): Promise<string> => {
   try {
+    const { data: { session } } = await supabase.auth.getSession()
     const { data, error } = await supabase.functions.invoke('ask-question', {
-      body: { question, transcript }
+      body: { question, transcript },
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`
+      }
     })
 
     if (error) throw error

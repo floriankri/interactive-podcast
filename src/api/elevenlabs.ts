@@ -7,8 +7,12 @@ const supabase = createClient(
 
 export const textToSpeech = async (text: string): Promise<ArrayBuffer> => {
   try {
+    const { data: { session } } = await supabase.auth.getSession()
     const { data, error } = await supabase.functions.invoke('text-to-speech', {
-      body: { text }
+      body: { text },
+      headers: {
+        Authorization: `Bearer ${session?.access_token}`
+      }
     })
 
     if (error) throw error
