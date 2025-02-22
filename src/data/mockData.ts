@@ -11,10 +11,10 @@ export const mockPodcastSeries: PodcastSeries[] = [
     episodes: [
       {
         id: 1,
-        title: "The Future of AI",
+        title: "Mostly Awsome",
         description: "Exploring the latest developments in artificial intelligence",
         duration: "45:30",
-        audioUrl: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+        audioUrl: "https://anchor.fm/s/fff39c24/podcast/play/97401485/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2025-0-22%2F393510921-44100-2-d3dc65fee8ad7.m4a",
         publishedAt: "Mar 15, 2024"
       },
       {
