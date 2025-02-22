@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, HelpCircle } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX, HelpCircle, SkipBack, SkipForward } from "lucide-react";
 import { Slider } from "./ui/slider";
 import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
@@ -39,6 +39,15 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
         audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
+    }
+  };
+
+  const skipTime = (seconds: number) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = Math.min(
+        Math.max(audioRef.current.currentTime + seconds, 0),
+        duration
+      );
     }
   };
 
@@ -109,10 +118,24 @@ export const AudioPlayer = ({ audioUrl, title, author }: AudioPlayerProps) => {
           {/* Play and Ask Question Buttons - Center */}
           <div className="flex items-center justify-center gap-4">
             <button
+              onClick={() => skipTime(-10)}
+              className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-opacity"
+            >
+              <SkipBack size={20} />
+            </button>
+            
+            <button
               onClick={togglePlay}
               className="h-10 w-10 rounded-full bg-primary flex items-center justify-center text-white hover:opacity-90 transition-opacity"
             >
               {isPlaying ? <Pause size={20} /> : <Play size={20} />}
+            </button>
+
+            <button
+              onClick={() => skipTime(10)}
+              className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary/20 transition-opacity"
+            >
+              <SkipForward size={20} />
             </button>
 
             <Button
