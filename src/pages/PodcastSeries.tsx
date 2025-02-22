@@ -1,19 +1,26 @@
+
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Play, HelpCircle } from "lucide-react";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { mockPodcastSeries } from "@/data/mockData";
 import type { Episode } from "@/types/podcast";
+
 const PodcastSeries = () => {
-  const {
-    id
-  } = useParams();
+  const { id } = useParams();
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const series = mockPodcastSeries.find(s => s.id === Number(id));
+
   if (!series) {
     return <div>Series not found</div>;
   }
-  return <div className="min-h-screen pb-32">
+
+  const handlePlayClick = (episode: Episode) => {
+    setSelectedEpisode(episode);
+  };
+
+  return (
+    <div className="min-h-screen pb-32">
       {/* Header */}
       <div className="bg-gradient-to-b from-primary/10 to-background">
         <div className="page-container">
@@ -42,10 +49,21 @@ const PodcastSeries = () => {
       <div className="page-container">
         <h2 className="text-2xl font-semibold mb-6">Episodes</h2>
         <div className="space-y-4">
-          {series.episodes.map(episode => <div key={episode.id} onClick={() => setSelectedEpisode(episode)} className="p-4 rounded-lg border border-gray-200 hover:border-primary/50 cursor-pointer transition-colors">
+          {series.episodes.map(episode => (
+            <div 
+              key={episode.id} 
+              onClick={() => handlePlayClick(episode)} 
+              className="p-4 rounded-lg border border-gray-200 hover:border-primary/50 cursor-pointer transition-colors"
+            >
               <div className="flex items-center gap-4">
-                <button className="h-10 w-10 rounded-full flex items-center justify-center text-primary transition-colors bg-black/0 text-base font-normal">
-                  <Play size={20} />
+                <button 
+                  className="h-10 w-10 rounded-full flex items-center justify-center text-primary transition-colors bg-black/0 hover:bg-primary/10 text-base font-normal"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePlayClick(episode);
+                  }}
+                >
+                  <Play size={20} className="ml-1 group-hover:fill-primary transition-colors hover:fill-foreground" />
                 </button>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold truncate">{episode.title}</h3>
@@ -56,12 +74,21 @@ const PodcastSeries = () => {
                   <span>{episode.duration}</span>
                 </div>
               </div>
-            </div>)}
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Audio Player */}
-      {selectedEpisode && <AudioPlayer audioUrl={selectedEpisode.audioUrl} title={selectedEpisode.title} author={series.author} />}
-    </div>;
+      {selectedEpisode && (
+        <AudioPlayer 
+          audioUrl={selectedEpisode.audioUrl} 
+          title={selectedEpisode.title} 
+          author={series.author} 
+        />
+      )}
+    </div>
+  );
 };
+
 export default PodcastSeries;
