@@ -10,6 +10,9 @@ const PodcastSeries = () => {
   const { id } = useParams();
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const series = mockPodcastSeries.find(s => s.id === Number(id));
+  const [isTranscriptVisible, setIsTranscriptVisible] = useState(false);
+  const [currentTranscript, setCurrentTranscript] = useState("");
+  const [fullTranscript, setFullTranscript] = useState("");
 
   if (!series) {
     return <div>Series not found</div>;
@@ -36,9 +39,19 @@ const PodcastSeries = () => {
               <h1 className="text-3xl font-bold mb-2">{series.title}</h1>
               <p className="text-lg text-gray-600 mb-4">{series.author}</p>
               <p className="text-gray-600 mb-4">{series.description}</p>
-              <div className="flex items-center gap-2 text-primary">
-                <HelpCircle size={20} />
-                <p className="text-sm">Interactive Experience: Click "Join in!" during playback to instantly talk with the podcast hosts.</p>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-primary">
+                  <HelpCircle size={20} />
+                  <p className="text-sm">Interactive Experience: Click "Join in!" during playback to instantly talk with the podcast hosts.</p>
+                </div>
+                <div className="flex items-center gap-2 text-primary">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary uppercase tracking-wide">
+                    Beta
+                  </span>
+                  <p className="text-sm">
+                    This is a <strong>vision</strong> on how the system can be filled with content. While <strong>many functions work</strong> in the podcasts below, we <strong>did not have consent to clone the voice</strong> of the hosts or access to precise <strong>transcripts</strong>.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
@@ -84,7 +97,11 @@ const PodcastSeries = () => {
         <AudioPlayer 
           audioUrl={selectedEpisode.audioUrl} 
           title={selectedEpisode.title} 
-          author={series.author} 
+          author={series.author}
+          onTranscriptToggle={setIsTranscriptVisible}
+          isTranscriptVisible={isTranscriptVisible}
+          currentTranscript={currentTranscript}
+          fullTranscript={fullTranscript}
         />
       )}
     </div>

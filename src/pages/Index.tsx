@@ -4,12 +4,16 @@ import { AudioPlayer } from "@/components/AudioPlayer";
 import { TranscriptDisplay } from "@/components/TranscriptDisplay";
 import { BlueShader } from "@/components/BlueShader";
 import { useState } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Index = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [displayedWord, setDisplayedWord] = useState("");
   const [currentSpeaker, setCurrentSpeaker] = useState("");
   const [uniqueSpeakers, setUniqueSpeakers] = useState<Set<string>>(new Set());
+  const [isTranscriptVisible, setIsTranscriptVisible] = useState(false);
+  const [currentTranscript, setCurrentTranscript] = useState("");
+  const [fullTranscript, setFullTranscript] = useState("");
   // Use the first episode of the first series as the default content
   const defaultSeries = mockPodcastSeries[0];
   const defaultEpisode = defaultSeries.episodes[0];
@@ -20,35 +24,55 @@ const Index = () => {
       <BlueShader currentWord={displayedWord} position="center" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
       <BlueShader currentWord={displayedWord} position="right" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
       {/* Hero Section */}
-      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center pointer-events-none">
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center pointer-events-none relative z-[2]">
         <div className="text-center max-w-4xl mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn mix-blend-multiply">
+          <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn">
             Interactive Podcast Experience
           </h1>
-          <div className="animate-fadeIn pointer-events-auto">
+          <div className="pointer-events-auto">
             <AudioPlayer
               audioUrl={defaultEpisode.audioUrl}
               title={defaultEpisode.title}
               author={defaultSeries.author}
               onTimeUpdate={setCurrentTime}
+              onTranscriptToggle={setIsTranscriptVisible}
+              isTranscriptVisible={isTranscriptVisible}
+              currentTranscript={currentTranscript}
+              fullTranscript={fullTranscript}
+              transcriptlocation={defaultEpisode.transcriptlocation}
             />
             <TranscriptDisplay 
               currentTime={currentTime} 
               onWordUpdate={setDisplayedWord}
               onSpeakerUpdate={setCurrentSpeaker}
               onSpeakersUpdate={setUniqueSpeakers}
+              isVisible={false}
+              onTranscriptUpdate={setCurrentTranscript}
+              onFullTranscriptUpdate={setFullTranscript}
+              transcriptlocation={defaultEpisode.transcriptlocation}
             />
           </div>
         </div>
       </div>
 
       {/* Podcasts Grid */}
-      <div className="page-container py-[150px] pointer-events-auto">
+      <div className="page-container py-[150px] pointer-events-auto relative z-[1]">
         <div className="flex items-center gap-2 mb-6">
-          <h2 className="text-2xl font-semibold mix-blend-multiply">Popular Podcasts</h2>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary uppercase tracking-wide mix-blend-multiply">
-            Beta
-          </span>
+          <h2 className="text-2xl font-semibold">Popular Podcasts</h2>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary uppercase tracking-wide">
+                  Beta
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[300px] bg-black text-white p-3 rounded-lg">
+                <p className="text-sm">
+                  This is a vision on how the system can be filled with content. While many functions work in the podcasts below, we did not have consent to clone the hosts voice or access to precise transcripts.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {mockPodcastSeries.map((podcast) => (

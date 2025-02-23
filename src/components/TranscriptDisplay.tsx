@@ -18,6 +18,10 @@ interface TranscriptDisplayProps {
   onWordUpdate: (word: string) => void;
   onSpeakerUpdate: (speaker: string) => void;
   onSpeakersUpdate: (speakers: Set<string>) => void;
+  isVisible: boolean;
+  onTranscriptUpdate: (transcript: string) => void;
+  onFullTranscriptUpdate: (transcript: string) => void;
+  transcriptlocation: string;
 }
 
 // Common 5-letter English words
@@ -36,7 +40,16 @@ const FIVE_LETTER_WORDS = [
   "wheel", "where", "which", "while", "white", "world", "write", "young"
 ];
 
-export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, onSpeakersUpdate }: TranscriptDisplayProps) => {
+export const TranscriptDisplay = ({ 
+  currentTime, 
+  onWordUpdate, 
+  onSpeakerUpdate, 
+  onSpeakersUpdate, 
+  isVisible,
+  onTranscriptUpdate,
+  onFullTranscriptUpdate,
+  transcriptlocation
+}: TranscriptDisplayProps) => {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [currentSegment, setCurrentSegment] = useState<string>("");
   const [currentSpeaker, setCurrentSpeaker] = useState<string>("");
@@ -122,7 +135,7 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
   }, [currentTime, onWordUpdate]);
 
   useEffect(() => {
-    fetch('/mostlyawesome podcast transcript.txt')
+    fetch(transcriptlocation)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -135,6 +148,7 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
         const parsedSegments: Segment[] = [];
         const speakers = new Set<string>();
         let currentSpeaker = "";
+        let formattedTranscript = "";
         
         lines.forEach((line, index) => {
           // First remove any timestamps from the line to avoid false speaker detection
@@ -164,41 +178,18 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
               const minutes = parseInt(match[2]);
               const seconds = parseInt(match[3]);
               const startTime = hours * 3600 + minutes * 60 + seconds;
-              
-              // Get end time from next timestamp, or next line's timestamp
-              let endTime = Infinity;
-              if (i < timeMatches.length - 1) {
-                // If there's another timestamp in this line, use it
-                const nextMatch = timeMatches[i + 1];
-                const nextHours = parseInt(nextMatch[1]);
-                const nextMinutes = parseInt(nextMatch[2]);
-                const nextSeconds = parseInt(nextMatch[3]);
-                endTime = nextHours * 3600 + nextMinutes * 60 + nextSeconds;
-              } else {
-                // Otherwise look for timestamp in next lines
-                for (let j = index + 1; j < lines.length; j++) {
-                  const nextTimeMatch = lines[j].match(/\[(\d{2}):(\d{2}):(\d{2})\]/);
-                  if (nextTimeMatch) {
-                    const nextHours = parseInt(nextTimeMatch[1]);
-                    const nextMinutes = parseInt(nextTimeMatch[2]);
-                    const nextSeconds = parseInt(nextTimeMatch[3]);
-                    endTime = nextHours * 3600 + nextMinutes * 60 + nextSeconds;
-                    break;
-                  }
-                }
-              }
+              const timeString = `[${match[1]}:${match[2]}:${match[3]}]`;
               
               let content = parts[i]?.trim();
               if (content) {
-                // Remove speaker prefix from content if it exists
-                const contentWithoutSpeaker = content.replace(/^[^:]+:\s*/, '');
-                // Only use the cleaned content if we actually removed a speaker prefix
-                content = contentWithoutSpeaker !== content ? contentWithoutSpeaker : content;
+                // Keep the speaker prefix in the content
+                // Add to formatted transcript with hidden timestamp for comparison
+                formattedTranscript += `<t>${startTime}</t>${content}\n`;
                 
                 parsedSegments.push({
                   text: content,
                   startTime,
-                  endTime,
+                  endTime: Infinity,  // Will be updated below
                   speaker: currentSpeaker
                 });
               }
@@ -206,9 +197,17 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
           }
         });
         
+        // Update end times
+        parsedSegments.forEach((segment, i) => {
+          if (i < parsedSegments.length - 1) {
+            segment.endTime = parsedSegments[i + 1].startTime;
+          }
+        });
+        
         setSegments(parsedSegments);
         setUniqueSpeakers(speakers);
         onSpeakersUpdate(speakers);
+        onFullTranscriptUpdate(formattedTranscript);
         setError("");
         setIsLoading(false);
       })
@@ -217,7 +216,7 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
         setError("Unable to load transcript. Please ensure the transcript file is available.");
         setIsLoading(false);
       });
-  }, [onSpeakersUpdate]);
+  }, [onSpeakersUpdate, onFullTranscriptUpdate, transcriptlocation]);
 
   useEffect(() => {
     // Find the current segment based on the currentTime
@@ -229,6 +228,7 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
       setCurrentSegment(current.text);
       setCurrentSpeaker(current.speaker);
       onSpeakerUpdate(current.speaker);
+      onTranscriptUpdate(current.text);
     }
 
     return () => {
@@ -237,7 +237,7 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
         wordAnimationRef.current = null;
       }
     };
-  }, [currentTime, segments, onSpeakerUpdate]);
+  }, [currentTime, segments, onSpeakerUpdate, onTranscriptUpdate]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -260,13 +260,14 @@ export const TranscriptDisplay = ({ currentTime, onWordUpdate, onSpeakerUpdate, 
 
   return (
     <div className="space-y-4">
-      <div className="max-w-2xl mx-auto mt-8 p-4 bg-primary/5 rounded-lg shadow-sm">
-        <h3 className="text-sm font-medium text-primary mb-2">Current Transcript</h3>
-        <p className="text-base leading-relaxed text-left min-h-[1.5em]">
-          {isLoading ? "Loading transcript..." : currentSegment}
-        </p>
-      </div>
-
+      {isVisible && (
+        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-2xl bottom-[180px] top-[300px] p-4 glass-morphism rounded-lg overflow-y-auto">
+          <h3 className="text-sm font-medium text-primary mb-2">Current Transcript</h3>
+          <p className="text-base leading-relaxed text-left">
+            {isLoading ? "Loading transcript..." : currentSegment}
+          </p>
+        </div>
+      )}
       {/* Hidden elements that maintain functionality */}
       <div className="hidden">
         <div>

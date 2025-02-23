@@ -1,11 +1,11 @@
-
 export interface Episode {
-  id: number;
+  id: string | number;
   title: string;
   description: string;
   duration: string;
   audioUrl: string;
   publishedAt: string;
+  transcriptlocation: string;
 }
 
 export interface PodcastSeries {
