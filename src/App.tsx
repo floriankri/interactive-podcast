@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import PodcastSeries from "./pages/PodcastSeries";
 import NotFound from "./pages/NotFound";
+import { ConversationProvider } from '@/contexts/ConversationContext';
+import { ConversationInitializer } from '@/components/ConversationInitializer';
 
 const queryClient = new QueryClient();
 
@@ -14,13 +16,16 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/series/:id" element={<PodcastSeries />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <ConversationProvider>
+        <ConversationInitializer />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/series/:id" element={<PodcastSeries />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </ConversationProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
