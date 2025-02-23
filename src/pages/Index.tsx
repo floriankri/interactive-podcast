@@ -21,28 +21,28 @@ const Index = () => {
 
   const educationImages = [
     {
-      src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-      alt: "Technology in Education",
-      title: "Digital Learning",
-      description: "Modern tech-enabled education"
+      src: "https://images.ctfassets.net/mrbo2ykgx5lt/30201/887a2448393b2c61fbcb8c6793191c12/mit_institution.jpg",
+      alt: "MITx Machine Learning",
+      title: "MITx: Machine Learning with Python",
+      description: "From Linear Models to Deep Learning"
     },
     {
-      src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-      alt: "Programming Education",
-      title: "Coding Education",
-      description: "Learn programming fundamentals"
+      src: "https://facts.stanford.edu/wp-content/uploads/sites/20/2024/06/12_Heart-of-Stanford.jpg",
+      alt: "Stanford Machine Learning Specialization",
+      title: "Stanford: Machine Learning Specialization",
+      description: "Comprehensive guide to modern ML techniques"
     },
     {
-      src: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7",
-      alt: "Software Development",
-      title: "Software Skills",
-      description: "Master software development"
+      src: "https://www.classcentral.com/report/wp-content/uploads/2022/05/cs50-2023-banner-e1673610020393.png",
+      alt: "CS50 Introduction to Computer Science",
+      title: "CS50: Introduction to Computer Science",
+      description: "Harvard's popular entry-level computer science course"
     },
     {
-      src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-      alt: "Focused Learning",
-      title: "Focused Study",
-      description: "Immersive learning environment"
+      src: "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera-course-photos.s3.amazonaws.com/41/763803169e4d31a5e7611bc928124b/Course-Logo.png",
+      alt: "AI for Everyone",
+      title: "AI for Everyone",
+      description: "Introduction to AI concepts for non-technical audiences"
     }
   ];
 
@@ -121,7 +121,7 @@ const Index = () => {
       {/* Education Grid */}
       <div className="page-container pb-[150px] pointer-events-auto relative z-[1]">
         <div className="flex items-center gap-2 mb-6">
-          <h2 className="text-2xl font-semibold">Popular Education in an Alpha phase</h2>
+          <h2 className="text-2xl font-semibold">Popular Education Content</h2>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
