@@ -1,69 +1,85 @@
-# Welcome to your Lovable project
+# Interactive Podcast Experience
 
-## Project info
+An innovative web application that transforms passive podcast listening into an interactive learning experience.
 
-**URL**: https://lovable.dev/projects/dee962bd-4c2c-48c5-b3b9-1a2b0b760478
+## Features
 
-## How can I edit this code?
+- **Interactive Audio Player**
+  - Glass-morphism design
+  - Transcript synchronization
+  - Note-taking capabilities
+  - Time-stamped navigation
 
-There are several ways of editing your application.
+- **Voice Interaction (Beta)**
+  - Join conversations with podcast hosts
+  - AI-powered responses using Eleven Labs
+  - Real-time voice processing
 
-**Use Lovable**
+- **Educational Content**
+  - Curated podcast library
+  - Educational course integration
+  - Interactive transcripts
+  - Smart note-taking system
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/dee962bd-4c2c-48c5-b3b9-1a2b0b760478) and start prompting.
+## Technology Stack
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Frontend Framework**
+  - React
+  - TypeScript
+  - Vite
 
-**Use your preferred IDE**
+- **Styling**
+  - Tailwind CSS
+  - shadcn/ui components
+  - Glass-morphism effects
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **AI Integration**
+  - Eleven Labs Voice AI
+  - Real-time speech processing
+  - Natural language understanding
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Getting Started
 
-Follow these steps:
-
+1. Clone the repository
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone <repository-url>
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2. Install dependencies
+```sh
+npm install
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+3. Set up environment variables
+```sh
+# Create a .env file with:
+VITE_ELEVEN_LABS_API_KEY=your_api_key
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+4. Start the development server
+```sh
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Project Structure
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `/src/components` - React components including AudioPlayer and TranscriptDisplay
+- `/src/contexts` - React contexts for state management
+- `/src/data` - Mock data and content
+- `/src/types` - TypeScript type definitions
+- `/src/pages` - Page components and routing
 
-**Use GitHub Codespaces**
+## Current Status
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+The project is in beta, with some features limited to specific content:
+- Full interaction available on the main podcast
+- Voice interaction and transcript features in testing
+- Educational content integration in alpha stage
 
-## What technologies are used for this project?
+## Contributing
 
-This project is built with .
+Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## License
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/dee962bd-4c2c-48c5-b3b9-1a2b0b760478) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+This project is licensed under the MIT License - see the LICENSE file for details.
