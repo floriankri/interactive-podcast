@@ -40,6 +40,7 @@ const Index = () => {
               currentTranscript={currentTranscript}
               fullTranscript={fullTranscript}
               transcriptlocation={defaultEpisode.transcriptlocation}
+              isMainPage={true}
             />
             <TranscriptDisplay 
               currentTime={currentTime} 

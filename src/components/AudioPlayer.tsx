@@ -29,9 +29,10 @@ interface AudioPlayerProps {
   currentTranscript: string;
   fullTranscript: string;
   transcriptlocation: string;
+  isMainPage?: boolean;
 }
 
-export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscriptToggle, isTranscriptVisible, currentTranscript, fullTranscript, transcriptlocation }: AudioPlayerProps) => {
+export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscriptToggle, isTranscriptVisible, currentTranscript, fullTranscript, transcriptlocation, isMainPage }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -543,7 +544,8 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
                 size="sm"
                 className="gap-2"
                 onClick={handleJoinIn}
-                disabled={isLoading}
+                disabled={isLoading || !isMainPage}
+                data-disabled={!isMainPage}
               >
                 <Hand size={16} />
                 {isRecording ? "Stop" : "Join in!"}
@@ -722,7 +724,8 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
                 size="sm"
                 className="gap-2"
                 onClick={handleJoinIn}
-                disabled={isLoading}
+                disabled={isLoading || !isMainPage}
+                data-disabled={!isMainPage}
               >
                 <Hand size={16} />
                 {isRecording ? "Stop" : "Join in!"}
@@ -732,6 +735,8 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
                 size="sm"
                 className="gap-2"
                 onClick={() => onTranscriptToggle(!isTranscriptVisible)}
+                disabled={!isMainPage}
+                data-disabled={!isMainPage}
               >
                 <FileText size={16} />
                 Transcript
