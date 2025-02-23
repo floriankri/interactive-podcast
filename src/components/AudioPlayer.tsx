@@ -14,14 +14,17 @@ declare global {
     webkitSpeechRecognition: any;
   }
 }
+
 interface SpeechRecognitionResult {
   transcript: string;
   isFinal: boolean;
 }
+
 interface SpeechRecognitionError extends Event {
   error: string;
   message?: string;
 }
+
 interface AudioPlayerProps {
   audioUrl: string;
   title: string;
@@ -34,18 +37,8 @@ interface AudioPlayerProps {
   transcriptlocation: string;
   isMainPage?: boolean;
 }
-export const AudioPlayer = ({
-  audioUrl,
-  title,
-  author,
-  onTimeUpdate,
-  onTranscriptToggle,
-  isTranscriptVisible,
-  currentTranscript,
-  fullTranscript,
-  transcriptlocation,
-  isMainPage
-}: AudioPlayerProps) => {
+
+export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscriptToggle, isTranscriptVisible, currentTranscript, fullTranscript, transcriptlocation, isMainPage }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -55,12 +48,8 @@ export const AudioPlayer = ({
   const transcriptRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const lastScrollPosition = useRef<number>(0);
-  const {
-    toast
-  } = useToast();
-  const {
-    agentId
-  } = useConversationContext();
+  const { toast } = useToast();
+  const { agentId } = useConversationContext();
   const conversation = useConversation();
 
   // API-related state
@@ -83,8 +72,12 @@ export const AudioPlayer = ({
 
   // Update transcript loading to remove fallback
   useEffect(() => {
-    fetch(transcriptlocation).then(response => response.text()).then(text => setTranscript(text)).catch(error => console.error('Error loading transcript:', error));
+    fetch(transcriptlocation)
+      .then(response => response.text())
+      .then(text => setTranscript(text))
+      .catch(error => console.error('Error loading transcript:', error));
   }, [transcriptlocation]);
+
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.addEventListener("timeupdate", () => {
@@ -97,6 +90,7 @@ export const AudioPlayer = ({
       });
     }
   }, [onTimeUpdate]);
+
   const togglePlay = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -107,23 +101,31 @@ export const AudioPlayer = ({
       setIsPlaying(!isPlaying);
     }
   };
+
   const skipTime = (seconds: number) => {
     if (audioRef.current) {
-      audioRef.current.currentTime = Math.min(Math.max(audioRef.current.currentTime + seconds, 0), duration);
+      audioRef.current.currentTime = Math.min(
+        Math.max(audioRef.current.currentTime + seconds, 0),
+        duration
+      );
     }
   };
+
+
   const toggleMute = () => {
     if (audioRef.current) {
       audioRef.current.muted = !isMuted;
       setIsMuted(!isMuted);
     }
   };
+
   const handleTimeChange = (newTime: number[]) => {
     if (audioRef.current) {
       audioRef.current.currentTime = newTime[0];
       setCurrentTime(newTime[0]);
     }
   };
+
   const handleLineClick = (timestamp: number) => {
     if (audioRef.current) {
       audioRef.current.currentTime = timestamp;
@@ -135,18 +137,22 @@ export const AudioPlayer = ({
       }
     }
   };
+
   const handleVolumeChange = (newVolume: number[]) => {
     if (audioRef.current) {
       audioRef.current.volume = newVolume[0];
       setVolume(newVolume[0]);
     }
   };
+
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
+
   const [isStoppingIntentionally, setIsStoppingIntentionally] = useState(false);
+
   const handleJoinIn = async () => {
     if (isRecording) {
       console.log('Stopping conversation...');
@@ -172,7 +178,7 @@ export const AudioPlayer = ({
       if (!agentId) {
         toast({
           title: "Error",
-          description: "Agent not initialized. Please try again."
+          description: "Agent not initialized. Please try again.",
         });
         return;
       }
@@ -190,35 +196,39 @@ export const AudioPlayer = ({
         console.error('Error starting conversation:', error);
         toast({
           title: "Error",
-          description: "Could not start conversation. Please try again."
+          description: "Could not start conversation. Please try again.",
         });
       }
     }
   };
+
   const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          sampleRate: 16000
+          sampleRate: 16000,
         }
       });
+
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
-      mediaRecorder.ondataavailable = e => {
+
+      mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) {
           chunksRef.current.push(e.data);
         }
       };
+
       mediaRecorder.start();
       setIsRecording(true);
     } catch (error) {
       console.error('Error accessing microphone:', error);
       toast({
         title: "Error",
-        description: "Could not access microphone. Please check permissions."
+        description: "Could not access microphone. Please check permissions.",
       });
     }
   };
@@ -232,6 +242,7 @@ export const AudioPlayer = ({
       audioContext.resume();
       document.removeEventListener('click', initAudioContext);
     };
+    
     document.addEventListener('click', initAudioContext);
     return () => document.removeEventListener('click', initAudioContext);
   }, []);
@@ -250,15 +261,16 @@ export const AudioPlayer = ({
   const handleTranscriptScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const container = e.currentTarget;
     const currentLine = container.querySelector('[data-current="true"]');
+    
     if (currentLine) {
       const containerRect = container.getBoundingClientRect();
       const lineRect = currentLine.getBoundingClientRect();
       const lineCenter = lineRect.top + lineRect.height / 2;
       const containerCenter = containerRect.top + containerRect.height / 2;
-
+      
       // If the current line is roughly in the center area (with some margin)
       const isNearCenter = Math.abs(lineCenter - containerCenter) < containerRect.height / 4;
-
+      
       // Only update autoScroll if the user has actually scrolled
       if (container.scrollTop !== lastScrollPosition.current) {
         setAutoScroll(isNearCenter);
@@ -276,9 +288,10 @@ export const AudioPlayer = ({
         const containerHeight = container.clientHeight;
         const lineTop = (currentLine as HTMLElement).offsetTop;
         const lineHeight = (currentLine as HTMLElement).offsetHeight;
-
+        
         // Calculate position to center the line
-        const scrollPosition = lineTop - containerHeight / 2 + lineHeight / 2;
+        const scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
+        
         container.scrollTo({
           top: scrollPosition,
           behavior: 'smooth'
@@ -299,15 +312,18 @@ export const AudioPlayer = ({
       setTimeout(scrollToCurrentLine, 100);
     }
   }, [isTranscriptVisible]);
+
   const [isNoteTaking, setIsNoteTaking] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [wasPlayingBeforeNote, setWasPlayingBeforeNote] = useState(false);
+
   const getCurrentTranscriptSegment = () => {
     console.log('Getting transcript segment at time:', currentTime);
+    
     const lines = fullTranscript.split('\n');
     let contextSegments = [];
     let currentIndex = -1;
-
+    
     // First, find the current line index
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
@@ -320,7 +336,9 @@ export const AudioPlayer = ({
         }
       }
     }
+
     console.log('Current line index:', currentIndex);
+
     if (currentIndex === -1) {
       console.log('No current line found');
       return '';
@@ -331,8 +349,9 @@ export const AudioPlayer = ({
     for (let i = startIndex; i <= currentIndex; i++) {
       const line = lines[i];
       if (!line.trim()) continue;
-      const cleanLine = line.replace(/<t>\d+<\/t>/, '').trim();
 
+      const cleanLine = line.replace(/<t>\d+<\/t>/, '').trim();
+      
       // Extract speaker if present
       const speakerMatch = cleanLine.match(/^([A-Za-z]+):/);
       if (speakerMatch) {
@@ -343,10 +362,12 @@ export const AudioPlayer = ({
         contextSegments.push(cleanLine);
       }
     }
+
     const contextText = contextSegments.join('\n');
     console.log('Context segments:', contextSegments);
     return contextText;
   };
+
   const startNoteTaking = async () => {
     try {
       // Pause podcast if playing
@@ -358,29 +379,33 @@ export const AudioPlayer = ({
 
       // Get the current transcript segment
       const currentSegment = getCurrentTranscriptSegment();
-
+      
       // Add the current segment to notes
       setNoteText(prev => {
         const timestamp = formatTime(currentTime);
         const newNote = `[${timestamp}] ${currentSegment}\n\n`;
         return prev + newNote;
       });
+
       setIsNoteTaking(true);
+      
       toast({
         title: "Note Added",
-        description: "Current segment has been added to your notes."
+        description: "Current segment has been added to your notes.",
       });
+
     } catch (error) {
       console.error('Error taking note:', error);
       toast({
         title: "Error",
-        description: "Could not add note. Please try again."
+        description: "Could not add note. Please try again.",
       });
     }
   };
+
   const stopNoteTaking = () => {
     setIsNoteTaking(false);
-
+    
     // Resume playback if it was playing before
     if (wasPlayingBeforeNote && audioRef.current) {
       audioRef.current.play();
@@ -388,6 +413,7 @@ export const AudioPlayer = ({
     }
     setWasPlayingBeforeNote(false);
   };
+
   const handleNoteClick = () => {
     if (isNoteTaking) {
       stopNoteTaking();
@@ -400,28 +426,40 @@ export const AudioPlayer = ({
   const handleAnswerFinished = () => {
     setIsPlayingAnswer(false);
   };
+
   const betaMessage = "This feature is not available for this podcast yet (Beta)";
-  return <>
-      <ConversationHandler onMessage={message => {
-      console.log('Agent message:', message);
-      if (message.type === 'asr_event') {
-        console.log('Transcribed text:', message.asr_event?.text);
-      } else if (message.type === 'agent_response_event') {
-        console.log('Agent response:', message.agent_response_event?.text);
-      }
-    }} onError={error => {
-      console.error('Conversation error:', error);
-      toast({
-        title: "Error",
-        description: "There was an error with the conversation. Please try again."
-      });
-    }} ref={conversationRef} />
+
+  return (
+    <>
+      <ConversationHandler 
+        onMessage={(message) => {
+          console.log('Agent message:', message);
+          if (message.type === 'asr_event') {
+            console.log('Transcribed text:', message.asr_event?.text);
+          } else if (message.type === 'agent_response_event') {
+            console.log('Agent response:', message.agent_response_event?.text);
+          }
+        }}
+        onError={(error) => {
+          console.error('Conversation error:', error);
+          toast({
+            title: "Error",
+            description: "There was an error with the conversation. Please try again.",
+          });
+        }}
+        ref={conversationRef}
+      />
       <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 animate-slideUp">
         <audio ref={audioRef} src={audioUrl} />
         <div className="container mx-auto max-w-4xl">
           {/* Progress Bar Section */}
           <div className="mb-4">
-            <Slider value={[currentTime]} max={duration} step={1} onValueChange={handleTimeChange} />
+            <Slider
+              value={[currentTime]}
+              max={duration}
+              step={1}
+              onValueChange={handleTimeChange}
+            />
             <div className="flex justify-between text-sm mt-1">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
@@ -438,22 +476,35 @@ export const AudioPlayer = ({
 
             {/* Play and Ask Question Buttons - Center */}
             <div className="flex items-center justify-center gap-6">
-              <button onClick={() => skipTime(-10)} className="relative flex items-center justify-center">
+              <button
+                onClick={() => skipTime(-10)}
+                className="relative flex items-center justify-center"
+              >
                 <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
                   <span className="text-xs font-medium">10</span>
                 </div>
               </button>
 
-              <button onClick={togglePlay} className="h-12 w-12 flex items-center justify-center">
+              <button
+                onClick={togglePlay}
+                className="h-12 w-12 flex items-center justify-center"
+              >
                 <div className="w-9 h-9 flex items-center justify-center">
-                  {isPlaying ? <div className="flex gap-1.5">
+                  {isPlaying ? (
+                    <div className="flex gap-1.5">
                       <div className="h-9 w-3 bg-foreground"></div>
                       <div className="h-9 w-3 bg-foreground"></div>
-                    </div> : <Play size={36} fill="black" className="ml-1" />}
+                    </div>
+                  ) : (
+                    <Play size={36} fill="black" className="ml-1" />
+                  )}
                 </div>
               </button>
 
-              <button onClick={() => skipTime(10)} className="relative flex items-center justify-center">
+              <button
+                onClick={() => skipTime(10)}
+                className="relative flex items-center justify-center"
+              >
                 <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
                   <span className="text-xs font-medium">10</span>
                 </div>
@@ -463,15 +514,24 @@ export const AudioPlayer = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className={!isMainPage ? "cursor-not-allowed" : ""}>
-                      <Button variant="outline" size="sm" className="gap-2" onClick={handleJoinIn} disabled={isLoading || !isMainPage} data-disabled={!isMainPage}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={handleJoinIn}
+                        disabled={isLoading || !isMainPage}
+                        data-disabled={!isMainPage}
+                      >
                         <Hand size={16} />
                         {isRecording ? "Stop" : "Join in!"}
                       </Button>
                     </span>
                   </TooltipTrigger>
-                  {!isMainPage && <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
+                  {!isMainPage && (
+                    <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
                       <p className="text-sm">{betaMessage}</p>
-                    </TooltipContent>}
+                    </TooltipContent>
+                  )}
                 </Tooltip>
               </TooltipProvider>
             </div>
@@ -481,7 +541,13 @@ export const AudioPlayer = ({
               <button onClick={toggleMute}>
                 {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
               </button>
-              <Slider value={[isMuted ? 0 : volume]} max={1} step={0.1} onValueChange={handleVolumeChange} className="w-24" />
+              <Slider
+                value={[isMuted ? 0 : volume]}
+                max={1}
+                step={0.1}
+                onValueChange={handleVolumeChange}
+                className="w-24"
+              />
             </div>
           </div>
         </div>
@@ -489,50 +555,75 @@ export const AudioPlayer = ({
 
       <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 z-[999]">
         <audio ref={audioRef} src={audioUrl} />
-        <audio ref={answerAudioRef} className="hidden" onEnded={handleAnswerFinished} onPause={handleAnswerFinished} />
+        <audio
+          ref={answerAudioRef}
+          className="hidden"
+          onEnded={handleAnswerFinished}
+          onPause={handleAnswerFinished}
+        />
         <div className="container mx-auto max-w-4xl relative">
-          {isTranscriptVisible && <>
-              <div ref={transcriptRef} onScroll={handleTranscriptScroll} className="absolute left-0 w-[48%] -top-[300px] glass-morphism p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-y-auto h-[250px]">
+          {isTranscriptVisible && (
+            <>
+              <div 
+                ref={transcriptRef}
+                onScroll={handleTranscriptScroll}
+                className="absolute left-0 w-[48%] -top-[300px] p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-y-auto h-[250px]"
+              >
                 <h3 className="text-sm font-medium text-primary mb-2">Transcript</h3>
                 <div className="text-sm leading-relaxed text-left whitespace-pre-wrap">
                   {fullTranscript.split('\n').map((line, index, array) => {
-                if (!line.trim()) return null;
-                const timeMatch = line.match(/<t>(\d+)<\/t>/);
-                const timestamp = timeMatch ? parseInt(timeMatch[1]) : 0;
-                const text = line.replace(/<t>\d+<\/t>/, '').trim();
-
-                // Extract speaker name if present (format: "Speaker:")
-                const speakerMatch = text.match(/^([A-Za-z]+):/);
-                const speaker = speakerMatch ? speakerMatch[1].trim() : '';
-                const content = speakerMatch ? text.slice(speakerMatch[0].length).trim() : text;
-
-                // Check if speaker changed from previous non-empty line
-                let previousSpeaker = '';
-                for (let i = index - 1; i >= 0; i--) {
-                  const prevLine = array[i];
-                  if (prevLine && prevLine.trim()) {
-                    const prevText = prevLine.replace(/<t>\d+<\/t>/, '').trim();
-                    const prevSpeakerMatch = prevText.match(/^([A-Za-z]+):/);
-                    if (prevSpeakerMatch) {
-                      previousSpeaker = prevSpeakerMatch[1].trim();
-                      break;
+                    if (!line.trim()) return null;
+                    const timeMatch = line.match(/<t>(\d+)<\/t>/);
+                    const timestamp = timeMatch ? parseInt(timeMatch[1]) : 0;
+                    const text = line.replace(/<t>\d+<\/t>/, '').trim();
+                    
+                    // Extract speaker name if present (format: "Speaker:")
+                    const speakerMatch = text.match(/^([A-Za-z]+):/);
+                    const speaker = speakerMatch ? speakerMatch[1].trim() : '';
+                    const content = speakerMatch ? text.slice(speakerMatch[0].length).trim() : text;
+                    
+                    // Check if speaker changed from previous non-empty line
+                    let previousSpeaker = '';
+                    for (let i = index - 1; i >= 0; i--) {
+                      const prevLine = array[i];
+                      if (prevLine && prevLine.trim()) {
+                        const prevText = prevLine.replace(/<t>\d+<\/t>/, '').trim();
+                        const prevSpeakerMatch = prevText.match(/^([A-Za-z]+):/);
+                        if (prevSpeakerMatch) {
+                          previousSpeaker = prevSpeakerMatch[1].trim();
+                          break;
+                        }
+                      }
                     }
-                  }
-                }
-                const showSpeaker = speaker && speaker !== previousSpeaker;
-                const isCurrent = timestamp <= currentTime && (!array[index + 1]?.match(/<t>(\d+)<\/t>/) || parseInt(array[index + 1].match(/<t>(\d+)<\/t>/)[1]) > currentTime);
-                return <div key={index}>
-                        {showSpeaker && <div className={`font-medium mt-4 mb-2 ${timestamp <= currentTime ? "text-foreground" : "text-muted-foreground"} cursor-pointer hover:text-primary transition-colors`} onClick={() => handleLineClick(timestamp)}>
+                    
+                    const showSpeaker = speaker && speaker !== previousSpeaker;
+                    const isCurrent = timestamp <= currentTime && (!array[index + 1]?.match(/<t>(\d+)<\/t>/) || parseInt(array[index + 1].match(/<t>(\d+)<\/t>/)[1]) > currentTime);
+                    
+                    return (
+                      <div key={index}>
+                        {showSpeaker && (
+                          <div 
+                            className={`font-medium mt-4 mb-2 ${timestamp <= currentTime ? "text-foreground" : "text-muted-foreground"} cursor-pointer hover:text-primary transition-colors`}
+                            onClick={() => handleLineClick(timestamp)}
+                          >
                             {speaker}
-                          </div>}
-                        <div data-current={isCurrent} className={`${timestamp <= currentTime ? "text-foreground" : "text-muted-foreground"} ${isCurrent ? "bg-primary/5" : ""} pl-4 cursor-pointer hover:text-primary transition-colors`} onClick={() => handleLineClick(timestamp)}>
+                          </div>
+                        )}
+                        <div 
+                          data-current={isCurrent}
+                          className={`${timestamp <= currentTime ? "text-foreground" : "text-muted-foreground"} ${isCurrent ? "bg-primary/5" : ""} pl-4 cursor-pointer hover:text-primary transition-colors`}
+                          onClick={() => handleLineClick(timestamp)}
+                        >
                           {content}
                         </div>
-                      </div>;
-              })}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-              <div className="absolute right-0 w-[48%] -top-[300px] p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-hidden h-[250px]">
+              <div 
+                className="absolute right-0 w-[48%] -top-[300px] p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-hidden h-[250px]"
+              >
                 <div className="h-full overflow-y-auto">
                   <h3 className="text-sm font-medium text-primary mb-2">Notes</h3>
                   <div className="text-sm leading-relaxed text-left whitespace-pre-wrap pb-16">
@@ -540,15 +631,25 @@ export const AudioPlayer = ({
                   </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 h-16 flex items-center justify-center">
-                  <Button variant="outline" size="sm" onClick={handleNoteClick}>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleNoteClick}
+                  >
                     {isNoteTaking ? "Stop" : "Note"}
                   </Button>
                 </div>
               </div>
-            </>}
+            </>
+          )}
           {/* Progress Bar Section */}
           <div className="mb-4">
-            <Slider value={[currentTime]} max={duration} step={1} onValueChange={handleTimeChange} />
+            <Slider
+              value={[currentTime]}
+              max={duration}
+              step={1}
+              onValueChange={handleTimeChange}
+            />
             <div className="flex justify-between text-sm mt-1">
               <span>{formatTime(currentTime)}</span>
               <span>{formatTime(duration)}</span>
@@ -565,22 +666,35 @@ export const AudioPlayer = ({
 
             {/* Play and Skip Buttons - Center */}
             <div className="flex items-center justify-center gap-6">
-              <button onClick={() => skipTime(-10)} className="relative flex items-center justify-center">
+              <button
+                onClick={() => skipTime(-10)}
+                className="relative flex items-center justify-center"
+              >
                 <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
                   <span className="text-xs font-medium">10</span>
                 </div>
               </button>
 
-              <button onClick={togglePlay} className="h-12 w-12 flex items-center justify-center">
+              <button
+                onClick={togglePlay}
+                className="h-12 w-12 flex items-center justify-center"
+              >
                 <div className="w-9 h-9 flex items-center justify-center">
-                  {isPlaying ? <div className="flex gap-1.5">
+                  {isPlaying ? (
+                    <div className="flex gap-1.5">
                       <div className="h-9 w-3 bg-foreground"></div>
                       <div className="h-9 w-3 bg-foreground"></div>
-                    </div> : <Play size={36} fill="black" className="ml-1" />}
+                    </div>
+                  ) : (
+                    <Play size={36} fill="black" className="ml-1" />
+                  )}
                 </div>
               </button>
 
-              <button onClick={() => skipTime(10)} className="relative flex items-center justify-center">
+              <button
+                onClick={() => skipTime(10)}
+                className="relative flex items-center justify-center"
+              >
                 <div className="h-8 w-8 rounded-full border-2 border-primary flex items-center justify-center text-primary">
                   <span className="text-xs font-medium">10</span>
                 </div>
@@ -593,35 +707,54 @@ export const AudioPlayer = ({
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className={!isMainPage ? "cursor-not-allowed" : ""}>
-                      <Button variant="outline" size="sm" className="gap-2" onClick={handleJoinIn} disabled={isLoading || !isMainPage} data-disabled={!isMainPage}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={handleJoinIn}
+                        disabled={isLoading || !isMainPage}
+                        data-disabled={!isMainPage}
+                      >
                         <Hand size={16} />
                         {isRecording ? "Stop" : "Join in!"}
                       </Button>
                     </span>
                   </TooltipTrigger>
-                  {!isMainPage && <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
+                  {!isMainPage && (
+                    <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
                       <p className="text-sm">{betaMessage}</p>
-                    </TooltipContent>}
+                    </TooltipContent>
+                  )}
                 </Tooltip>
               </TooltipProvider>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className={!isMainPage ? "cursor-not-allowed" : ""}>
-                      <Button variant="outline" size="sm" className="gap-2" onClick={() => onTranscriptToggle(!isTranscriptVisible)} disabled={!isMainPage} data-disabled={!isMainPage}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => onTranscriptToggle(!isTranscriptVisible)}
+                        disabled={!isMainPage}
+                        data-disabled={!isMainPage}
+                      >
                         <FileText size={16} />
                         Transcript
                       </Button>
                     </span>
                   </TooltipTrigger>
-                  {!isMainPage && <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
+                  {!isMainPage && (
+                    <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
                       <p className="text-sm">{betaMessage}</p>
-                    </TooltipContent>}
+                    </TooltipContent>
+                  )}
                 </Tooltip>
               </TooltipProvider>
             </div>
           </div>
         </div>
       </div>
-    </>;
+    </>
+  );
 };
