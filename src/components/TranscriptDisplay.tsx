@@ -21,6 +21,7 @@ interface TranscriptDisplayProps {
   isVisible: boolean;
   onTranscriptUpdate: (transcript: string) => void;
   onFullTranscriptUpdate: (transcript: string) => void;
+  transcriptlocation: string;
 }
 
 // Common 5-letter English words
@@ -46,7 +47,8 @@ export const TranscriptDisplay = ({
   onSpeakersUpdate, 
   isVisible,
   onTranscriptUpdate,
-  onFullTranscriptUpdate 
+  onFullTranscriptUpdate,
+  transcriptlocation
 }: TranscriptDisplayProps) => {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [currentSegment, setCurrentSegment] = useState<string>("");
@@ -133,7 +135,7 @@ export const TranscriptDisplay = ({
   }, [currentTime, onWordUpdate]);
 
   useEffect(() => {
-    fetch('/mostlyawesome podcast transcript.txt')
+    fetch(transcriptlocation)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -214,7 +216,7 @@ export const TranscriptDisplay = ({
         setError("Unable to load transcript. Please ensure the transcript file is available.");
         setIsLoading(false);
       });
-  }, [onSpeakersUpdate, onFullTranscriptUpdate]);
+  }, [onSpeakersUpdate, onFullTranscriptUpdate, transcriptlocation]);
 
   useEffect(() => {
     // Find the current segment based on the currentTime

@@ -28,9 +28,10 @@ interface AudioPlayerProps {
   isTranscriptVisible: boolean;
   currentTranscript: string;
   fullTranscript: string;
+  transcriptlocation: string;
 }
 
-export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscriptToggle, isTranscriptVisible, currentTranscript, fullTranscript }: AudioPlayerProps) => {
+export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscriptToggle, isTranscriptVisible, currentTranscript, fullTranscript, transcriptlocation }: AudioPlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -53,13 +54,13 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
   // Add transcript state
   const [transcript, setTranscript] = useState('');
 
-  // Load transcript on mount
+  // Update transcript loading to remove fallback
   useEffect(() => {
-    fetch('/mostlyawesome podcast transcript.txt')
+    fetch(transcriptlocation)
       .then(response => response.text())
       .then(text => setTranscript(text))
       .catch(error => console.error('Error loading transcript:', error));
-  }, []);
+  }, [transcriptlocation]);
 
   useEffect(() => {
     if (audioRef.current) {

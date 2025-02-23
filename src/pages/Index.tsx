@@ -1,4 +1,3 @@
-
 import { PodcastCard } from "@/components/PodcastCard";
 import { mockPodcastSeries } from "@/data/mockData";
 import { AudioPlayer } from "@/components/AudioPlayer";
@@ -30,7 +29,7 @@ const Index = () => {
           <h1 className="text-4xl md:text-5xl font-bold mb-20 animate-fadeIn">
             Interactive Podcast Experience
           </h1>
-          <div className="animate-fadeIn pointer-events-auto">
+          <div className="pointer-events-auto">
             <AudioPlayer
               audioUrl={defaultEpisode.audioUrl}
               title={defaultEpisode.title}
@@ -40,6 +39,7 @@ const Index = () => {
               isTranscriptVisible={isTranscriptVisible}
               currentTranscript={currentTranscript}
               fullTranscript={fullTranscript}
+              transcriptlocation={defaultEpisode.transcriptlocation}
             />
             <TranscriptDisplay 
               currentTime={currentTime} 
@@ -49,6 +49,7 @@ const Index = () => {
               isVisible={false}
               onTranscriptUpdate={setCurrentTranscript}
               onFullTranscriptUpdate={setFullTranscript}
+              transcriptlocation={defaultEpisode.transcriptlocation}
             />
           </div>
         </div>
