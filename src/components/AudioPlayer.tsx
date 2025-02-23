@@ -6,6 +6,7 @@ import { useToast } from "./ui/use-toast";
 import { ConversationHandler } from "./ConversationHandler";
 import { useConversation } from '@11labs/react';
 import { useConversationContext } from '@/contexts/ConversationContext';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 // Add these type definitions at the top of the file
 declare global {
@@ -458,6 +459,8 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
     setIsPlayingAnswer(false);
   };
 
+  const betaMessage = "This feature is not available for this podcast yet (Beta)";
+
   return (
     <>
       <ConversationHandler 
@@ -539,17 +542,30 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
                 </div>
               </button>
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={handleJoinIn}
-                disabled={isLoading || !isMainPage}
-                data-disabled={!isMainPage}
-              >
-                <Hand size={16} />
-                {isRecording ? "Stop" : "Join in!"}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className={!isMainPage ? "cursor-not-allowed" : ""}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={handleJoinIn}
+                        disabled={isLoading || !isMainPage}
+                        data-disabled={!isMainPage}
+                      >
+                        <Hand size={16} />
+                        {isRecording ? "Stop" : "Join in!"}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!isMainPage && (
+                    <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
+                      <p className="text-sm">{betaMessage}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             {/* Volume Controls - Right */}
@@ -719,28 +735,54 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
 
             {/* Join in Button and Transcript Button - Right */}
             <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={handleJoinIn}
-                disabled={isLoading || !isMainPage}
-                data-disabled={!isMainPage}
-              >
-                <Hand size={16} />
-                {isRecording ? "Stop" : "Join in!"}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                onClick={() => onTranscriptToggle(!isTranscriptVisible)}
-                disabled={!isMainPage}
-                data-disabled={!isMainPage}
-              >
-                <FileText size={16} />
-                Transcript
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className={!isMainPage ? "cursor-not-allowed" : ""}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={handleJoinIn}
+                        disabled={isLoading || !isMainPage}
+                        data-disabled={!isMainPage}
+                      >
+                        <Hand size={16} />
+                        {isRecording ? "Stop" : "Join in!"}
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!isMainPage && (
+                    <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
+                      <p className="text-sm">{betaMessage}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className={!isMainPage ? "cursor-not-allowed" : ""}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={() => onTranscriptToggle(!isTranscriptVisible)}
+                        disabled={!isMainPage}
+                        data-disabled={!isMainPage}
+                      >
+                        <FileText size={16} />
+                        Transcript
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {!isMainPage && (
+                    <TooltipContent side="top" className="bg-black text-white p-2 rounded-lg">
+                      <p className="text-sm">{betaMessage}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </div>
