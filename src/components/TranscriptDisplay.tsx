@@ -259,7 +259,7 @@ export const TranscriptDisplay = ({
   return (
     <div className="space-y-4">
       {isVisible && (
-        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-2xl bottom-[180px] top-[300px] p-4 bg-primary/5 rounded-lg shadow-sm overflow-y-auto">
+        <div className="absolute left-1/2 -translate-x-1/2 w-full max-w-2xl bottom-[180px] top-[300px] p-4 glass-morphism rounded-lg overflow-y-auto">
           <h3 className="text-sm font-medium text-primary mb-2">Current Transcript</h3>
           <p className="text-base leading-relaxed text-left">
             {isLoading ? "Loading transcript..." : currentSegment}

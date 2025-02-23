@@ -55,7 +55,7 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
 
   // Load transcript on mount
   useEffect(() => {
-    fetch('/vercel_acq2_transcript.txt')
+    fetch('/mostlyawesome podcast transcript.txt')
       .then(response => response.text())
       .then(text => setTranscript(text))
       .catch(error => console.error('Error loading transcript:', error));
@@ -494,7 +494,7 @@ Please create a clear and concise note based on the user's command and the trans
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 animate-slideUp z-[999]">
+    <div className="fixed bottom-0 left-0 right-0 glass-morphism p-4 z-[999]">
       <audio ref={audioRef} src={audioUrl} />
       <audio
         ref={answerAudioRef}
@@ -508,7 +508,7 @@ Please create a clear and concise note based on the user's command and the trans
             <div 
               ref={transcriptRef}
               onScroll={handleTranscriptScroll}
-              className="absolute left-0 w-[48%] -top-[300px] p-4 bg-gray-500/20 backdrop-blur-sm rounded-lg shadow-sm overflow-y-auto h-[250px]"
+              className="absolute left-0 w-[48%] -top-[300px] p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-y-auto h-[250px]"
             >
               <h3 className="text-sm font-medium text-primary mb-2">Transcript</h3>
               <div className="text-sm leading-relaxed text-left whitespace-pre-wrap">
@@ -563,7 +563,7 @@ Please create a clear and concise note based on the user's command and the trans
               </div>
             </div>
             <div 
-              className="absolute right-0 w-[48%] -top-[300px] p-4 bg-gray-500/20 backdrop-blur-sm rounded-lg shadow-sm overflow-hidden h-[250px]"
+              className="absolute right-0 w-[48%] -top-[300px] p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-hidden h-[250px]"
             >
               <div className="h-full overflow-y-auto">
                 <h3 className="text-sm font-medium text-primary mb-2">Notes</h3>
@@ -571,7 +571,7 @@ Please create a clear and concise note based on the user's command and the trans
                   {noteText}
                 </div>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-16 flex items-center justify-center bg-gradient-to-t from-gray-500/20 via-gray-500/10 to-transparent">
+              <div className="absolute bottom-0 left-0 right-0 h-16 flex items-center justify-center">
                 <Button 
                   variant="outline" 
                   size="sm"
