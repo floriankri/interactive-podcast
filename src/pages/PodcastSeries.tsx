@@ -10,6 +10,9 @@ const PodcastSeries = () => {
   const { id } = useParams();
   const [selectedEpisode, setSelectedEpisode] = useState<Episode | null>(null);
   const series = mockPodcastSeries.find(s => s.id === Number(id));
+  const [isTranscriptVisible, setIsTranscriptVisible] = useState(false);
+  const [currentTranscript, setCurrentTranscript] = useState("");
+  const [fullTranscript, setFullTranscript] = useState("");
 
   if (!series) {
     return <div>Series not found</div>;
@@ -84,7 +87,11 @@ const PodcastSeries = () => {
         <AudioPlayer 
           audioUrl={selectedEpisode.audioUrl} 
           title={selectedEpisode.title} 
-          author={series.author} 
+          author={series.author}
+          onTranscriptToggle={setIsTranscriptVisible}
+          isTranscriptVisible={isTranscriptVisible}
+          currentTranscript={currentTranscript}
+          fullTranscript={fullTranscript}
         />
       )}
     </div>
