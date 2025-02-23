@@ -20,6 +20,11 @@ interface SpeechRecognitionResult {
   isFinal: boolean;
 }
 
+interface SpeechRecognitionError extends Event {
+  error: string;
+  message?: string;
+}
+
 interface AudioPlayerProps {
   audioUrl: string;
   title: string;
@@ -58,6 +63,12 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
 
   // Add transcript state
   const [transcript, setTranscript] = useState('');
+
+  // Add these near your other state declarations
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY = 2000; // 2 seconds between retries
 
   // Update transcript loading to remove fallback
   useEffect(() => {
@@ -156,6 +167,11 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
       if (conversationRef.current?.endSession) {
         await conversationRef.current.endSession();
       }
+      // Resume podcast audio
+      if (audioRef.current) {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
     } else {
       console.log('Starting conversation...');
       setIsStoppingIntentionally(false);
@@ -165,6 +181,11 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
           description: "Agent not initialized. Please try again.",
         });
         return;
+      }
+      // Pause podcast audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        setIsPlaying(false);
       }
       // Start conversation session first
       try {
@@ -293,11 +314,8 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
   }, [isTranscriptVisible]);
 
   const [isNoteTaking, setIsNoteTaking] = useState(false);
-  const [wasPlayingBeforeNote, setWasPlayingBeforeNote] = useState(false);
   const [noteText, setNoteText] = useState('');
-  const recognitionRef = useRef<any>(null);
-
-  
+  const [wasPlayingBeforeNote, setWasPlayingBeforeNote] = useState(false);
 
   const getCurrentTranscriptSegment = () => {
     console.log('Getting transcript segment at time:', currentTime);
@@ -352,103 +370,53 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
 
   const startNoteTaking = async () => {
     try {
-      // Create a new instance each time
-      const SpeechRecognition = window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onresult = async (event: any) => {
-        const results = event.results;
-        let finalTranscript = '';
-        let interimTranscript = '';
-
-        for (let i = 0; i < results.length; i++) {
-          const result = results[i];
-          if (result.isFinal) {
-            finalTranscript += result[0].transcript;
-          } else {
-            interimTranscript += result[0].transcript;
-          }
-        }
-
-        if (finalTranscript) {
-          console.log('Final transcript:', finalTranscript);
-          const command = finalTranscript.toLowerCase();
-          
-          if (command.includes('make a note') || 
-              command.includes('take a note') || 
-              command.includes('write this down') ||
-              command.includes('write a note') ||
-              command.includes('note this')) {
-            console.log('Note command detected');
-            const currentTranscriptSegment = getCurrentTranscriptSegment();
-            console.log('Transcript context:', currentTranscriptSegment);
-            
-          
-          }
-        }
-      };
-
-      recognition.onerror = (event: any) => {
-        console.error('Speech recognition error:', event.error);
-        stopNoteTaking();
-        toast({
-          title: "Error",
-          description: "Error with speech recognition. Please try again.",
-        });
-      };
-
-      recognition.onend = () => {
-        console.log('Speech recognition ended');
-        stopNoteTaking();
-      };
-
-      // Store the instance
-      recognitionRef.current = recognition;
-
-      // Start recording
-      recognition.start();
-      setIsNoteTaking(true);
-      
       // Pause podcast if playing
       if (audioRef.current && isPlaying) {
         audioRef.current.pause();
         setIsPlaying(false);
         setWasPlayingBeforeNote(true);
       }
+
+      // Get the current transcript segment
+      const currentSegment = getCurrentTranscriptSegment();
+      
+      // Add the current segment to notes
+      setNoteText(prev => {
+        const timestamp = formatTime(currentTime);
+        const newNote = `[${timestamp}] ${currentSegment}\n\n`;
+        return prev + newNote;
+      });
+
+      setIsNoteTaking(true);
+      
+      toast({
+        title: "Note Added",
+        description: "Current segment has been added to your notes.",
+      });
+
     } catch (error) {
-      console.error('Error starting speech recognition:', error);
+      console.error('Error taking note:', error);
       toast({
         title: "Error",
-        description: "Could not start speech recognition. Please check browser compatibility.",
+        description: "Could not add note. Please try again.",
       });
-      stopNoteTaking();
     }
   };
 
   const stopNoteTaking = () => {
-    console.log('Stopping note taking...');
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch (e) {
-        console.error('Error stopping recognition:', e);
-      }
-      recognitionRef.current = null;
-    }
     setIsNoteTaking(false);
+    
+    // Resume playback if it was playing before
+    if (wasPlayingBeforeNote && audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+    setWasPlayingBeforeNote(false);
   };
 
   const handleNoteClick = () => {
     if (isNoteTaking) {
       stopNoteTaking();
-      // Resume playback if it was playing before
-      if (wasPlayingBeforeNote && audioRef.current) {
-        audioRef.current.play();
-        setIsPlaying(true);
-      }
     } else {
       startNoteTaking();
     }
