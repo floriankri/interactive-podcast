@@ -46,8 +46,6 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
   const [isMuted, setIsMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
-  const lastScrollPosition = useRef<number>(0);
   const { toast } = useToast();
   const { agentId } = useConversationContext();
   const conversation = useConversation();
@@ -111,7 +109,6 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
     }
   };
 
-
   const toggleMute = () => {
     if (audioRef.current) {
       audioRef.current.muted = !isMuted;
@@ -123,18 +120,6 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
     if (audioRef.current) {
       audioRef.current.currentTime = newTime[0];
       setCurrentTime(newTime[0]);
-    }
-  };
-
-  const handleLineClick = (timestamp: number) => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = timestamp;
-      setCurrentTime(timestamp);
-      // If audio was paused, start playing from the clicked position
-      if (!isPlaying) {
-        audioRef.current.play();
-        setIsPlaying(true);
-      }
     }
   };
 
@@ -257,116 +242,9 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
     };
   }, []);
 
-  // Function to handle transcript scroll
-  const handleTranscriptScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const container = e.currentTarget;
-    const currentLine = container.querySelector('[data-current="true"]');
-    
-    if (currentLine) {
-      const containerRect = container.getBoundingClientRect();
-      const lineRect = currentLine.getBoundingClientRect();
-      const lineCenter = lineRect.top + lineRect.height / 2;
-      const containerCenter = containerRect.top + containerRect.height / 2;
-      
-      // If the current line is roughly in the center area (with some margin)
-      const isNearCenter = Math.abs(lineCenter - containerCenter) < containerRect.height / 4;
-      
-      // Only update autoScroll if the user has actually scrolled
-      if (container.scrollTop !== lastScrollPosition.current) {
-        setAutoScroll(isNearCenter);
-        lastScrollPosition.current = container.scrollTop;
-      }
-    }
-  };
-
-  // Function to scroll current line to center
-  const scrollToCurrentLine = () => {
-    if (autoScroll && transcriptRef.current) {
-      const currentLine = transcriptRef.current.querySelector('[data-current="true"]');
-      if (currentLine) {
-        const container = transcriptRef.current;
-        const containerHeight = container.clientHeight;
-        const lineTop = (currentLine as HTMLElement).offsetTop;
-        const lineHeight = (currentLine as HTMLElement).offsetHeight;
-        
-        // Calculate position to center the line
-        const scrollPosition = lineTop - (containerHeight / 2) + (lineHeight / 2);
-        
-        container.scrollTo({
-          top: scrollPosition,
-          behavior: 'smooth'
-        });
-      }
-    }
-  };
-
-  // Call scrollToCurrentLine whenever currentTime changes and autoScroll is true
-  useEffect(() => {
-    scrollToCurrentLine();
-  }, [currentTime, autoScroll]);
-
-  // Call scrollToCurrentLine when transcript becomes visible
-  useEffect(() => {
-    if (isTranscriptVisible) {
-      // Small delay to ensure the DOM is ready
-      setTimeout(scrollToCurrentLine, 100);
-    }
-  }, [isTranscriptVisible]);
-
   const [isNoteTaking, setIsNoteTaking] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [wasPlayingBeforeNote, setWasPlayingBeforeNote] = useState(false);
-
-  const getCurrentTranscriptSegment = () => {
-    console.log('Getting transcript segment at time:', currentTime);
-    
-    const lines = fullTranscript.split('\n');
-    let contextSegments = [];
-    let currentIndex = -1;
-    
-    // First, find the current line index
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const timeMatch = line.match(/<t>(\d+)<\/t>/);
-      if (timeMatch) {
-        const timestamp = parseInt(timeMatch[1]);
-        if (timestamp <= currentTime && (!lines[i + 1] || !lines[i + 1].match(/<t>(\d+)<\/t>/) || parseInt(lines[i + 1].match(/<t>(\d+)<\/t>/)[1]) > currentTime)) {
-          currentIndex = i;
-          break;
-        }
-      }
-    }
-
-    console.log('Current line index:', currentIndex);
-
-    if (currentIndex === -1) {
-      console.log('No current line found');
-      return '';
-    }
-
-    // Gather context from previous lines (up to 10 lines)
-    const startIndex = Math.max(0, currentIndex - 10);
-    for (let i = startIndex; i <= currentIndex; i++) {
-      const line = lines[i];
-      if (!line.trim()) continue;
-
-      const cleanLine = line.replace(/<t>\d+<\/t>/, '').trim();
-      
-      // Extract speaker if present
-      const speakerMatch = cleanLine.match(/^([A-Za-z]+):/);
-      if (speakerMatch) {
-        const speaker = speakerMatch[1].trim();
-        const content = cleanLine.slice(speakerMatch[0].length).trim();
-        contextSegments.push(`${speaker}: ${content}`);
-      } else {
-        contextSegments.push(cleanLine);
-      }
-    }
-
-    const contextText = contextSegments.join('\n');
-    console.log('Context segments:', contextSegments);
-    return contextText;
-  };
 
   const startNoteTaking = async () => {
     try {
@@ -376,22 +254,12 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
         setIsPlaying(false);
         setWasPlayingBeforeNote(true);
       }
-
-      // Get the current transcript segment
-      const currentSegment = getCurrentTranscriptSegment();
       
-      // Add the current segment to notes
-      setNoteText(prev => {
-        const timestamp = formatTime(currentTime);
-        const newNote = `[${timestamp}] ${currentSegment}\n\n`;
-        return prev + newNote;
-      });
-
       setIsNoteTaking(true);
       
       toast({
-        title: "Note Added",
-        description: "Current segment has been added to your notes.",
+        title: "Note Started",
+        description: "You can now add notes at the current timestamp.",
       });
 
     } catch (error) {
@@ -566,54 +434,36 @@ export const AudioPlayer = ({ audioUrl, title, author, onTimeUpdate, onTranscrip
             <>
               <div 
                 ref={transcriptRef}
-                onScroll={handleTranscriptScroll}
                 className="absolute left-0 w-[48%] -top-[300px] p-4 bg-background/80 backdrop-blur-[8px] rounded-lg overflow-y-auto h-[250px]"
               >
                 <h3 className="text-sm font-medium text-primary mb-2">Transcript</h3>
                 <div className="text-sm leading-relaxed text-left whitespace-pre-wrap">
-                  {fullTranscript.split('\n').map((line, index, array) => {
+                  {/* Simplified transcript display without timestamp functionality */}
+                  {transcript.split('\n').map((line, index) => {
                     if (!line.trim()) return null;
-                    const timeMatch = line.match(/<t>(\d+)<\/t>/);
-                    const timestamp = timeMatch ? parseInt(timeMatch[1]) : 0;
-                    const text = line.replace(/<t>\d+<\/t>/, '').trim();
                     
                     // Extract speaker name if present (format: "Speaker:")
-                    const speakerMatch = text.match(/^([A-Za-z]+):/);
+                    const speakerMatch = line.match(/^([A-Za-z]+):/);
                     const speaker = speakerMatch ? speakerMatch[1].trim() : '';
-                    const content = speakerMatch ? text.slice(speakerMatch[0].length).trim() : text;
+                    const content = speakerMatch ? line.slice(speakerMatch[0].length).trim() : line;
                     
-                    // Check if speaker changed from previous non-empty line
-                    let previousSpeaker = '';
-                    for (let i = index - 1; i >= 0; i--) {
-                      const prevLine = array[i];
-                      if (prevLine && prevLine.trim()) {
-                        const prevText = prevLine.replace(/<t>\d+<\/t>/, '').trim();
-                        const prevSpeakerMatch = prevText.match(/^([A-Za-z]+):/);
-                        if (prevSpeakerMatch) {
-                          previousSpeaker = prevSpeakerMatch[1].trim();
-                          break;
-                        }
-                      }
+                    // Check if this is a new speaker by comparing with previous line
+                    let isNewSpeaker = false;
+                    if (speaker) {
+                      const prevLine = index > 0 ? transcript.split('\n')[index - 1] : '';
+                      const prevSpeakerMatch = prevLine.match(/^([A-Za-z]+):/);
+                      const prevSpeaker = prevSpeakerMatch ? prevSpeakerMatch[1].trim() : '';
+                      isNewSpeaker = speaker !== prevSpeaker;
                     }
-                    
-                    const showSpeaker = speaker && speaker !== previousSpeaker;
-                    const isCurrent = timestamp <= currentTime && (!array[index + 1]?.match(/<t>(\d+)<\/t>/) || parseInt(array[index + 1].match(/<t>(\d+)<\/t>/)[1]) > currentTime);
                     
                     return (
                       <div key={index}>
-                        {showSpeaker && (
-                          <div 
-                            className={`font-medium mt-4 mb-2 ${timestamp <= currentTime ? "text-foreground" : "text-muted-foreground"} cursor-pointer hover:text-primary transition-colors`}
-                            onClick={() => handleLineClick(timestamp)}
-                          >
+                        {isNewSpeaker && (
+                          <div className="font-medium mt-4 mb-2 text-foreground">
                             {speaker}
                           </div>
                         )}
-                        <div 
-                          data-current={isCurrent}
-                          className={`${timestamp <= currentTime ? "text-foreground" : "text-muted-foreground"} ${isCurrent ? "bg-primary/5" : ""} pl-4 cursor-pointer hover:text-primary transition-colors`}
-                          onClick={() => handleLineClick(timestamp)}
-                        >
+                        <div className="text-foreground pl-4">
                           {content}
                         </div>
                       </div>

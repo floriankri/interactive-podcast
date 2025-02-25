@@ -5,6 +5,7 @@ import { TranscriptDisplay } from "@/components/TranscriptDisplay";
 import { BlueShader } from "@/components/BlueShader";
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 const Index = () => {
   const [currentTime, setCurrentTime] = useState(0);
   const [displayedWord, setDisplayedWord] = useState("");
@@ -13,9 +14,16 @@ const Index = () => {
   const [isTranscriptVisible, setIsTranscriptVisible] = useState(false);
   const [currentTranscript, setCurrentTranscript] = useState("");
   const [fullTranscript, setFullTranscript] = useState("");
-  // Use the first episode of the first series as the default content
-  const defaultSeries = mockPodcastSeries[0];
-  const defaultEpisode = defaultSeries.episodes[0];
+
+  // Create a custom entry for the ACQ2 episode using the local transcript
+  const localAcq2Episode = {
+    id: 999,
+    title: "ACQ2: Building Web Apps with Just English and AI", // Using the title from the screenshot
+    audioUrl: "/vercel_acq2.mp3", // This is the TSMC episode audio URL from mockData
+    author: "Acquired ACQ2",
+    transcriptlocation: "/vercel_acq2_transcript.txt" // This is in your public folder
+  };
+
   const educationImages = [{
     src: "https://images.ctfassets.net/mrbo2ykgx5lt/30201/887a2448393b2c61fbcb8c6793191c12/mit_institution.jpg",
     alt: "MITx Machine Learning",
@@ -37,6 +45,7 @@ const Index = () => {
     title: "AI for Everyone",
     description: "Introduction to AI concepts for non-technical audiences"
   }];
+
   return <div className="min-h-screen">
       <BlueShader currentWord={displayedWord} position="left" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
       <BlueShader currentWord={displayedWord} position="center" currentSpeaker={currentSpeaker} uniqueSpeakers={uniqueSpeakers} />
@@ -48,8 +57,28 @@ const Index = () => {
             Interactive Podcast Experience
           </h1>
           <div className="pointer-events-auto">
-            <AudioPlayer audioUrl={defaultEpisode.audioUrl} title={defaultEpisode.title} author={defaultSeries.author} onTimeUpdate={setCurrentTime} onTranscriptToggle={setIsTranscriptVisible} isTranscriptVisible={isTranscriptVisible} currentTranscript={currentTranscript} fullTranscript={fullTranscript} transcriptlocation={defaultEpisode.transcriptlocation} isMainPage={true} />
-            <TranscriptDisplay currentTime={currentTime} onWordUpdate={setDisplayedWord} onSpeakerUpdate={setCurrentSpeaker} onSpeakersUpdate={setUniqueSpeakers} isVisible={false} onTranscriptUpdate={setCurrentTranscript} onFullTranscriptUpdate={setFullTranscript} transcriptlocation={defaultEpisode.transcriptlocation} />
+            <AudioPlayer 
+              audioUrl={localAcq2Episode.audioUrl} 
+              title={localAcq2Episode.title} 
+              author={localAcq2Episode.author} 
+              onTimeUpdate={setCurrentTime} 
+              onTranscriptToggle={setIsTranscriptVisible} 
+              isTranscriptVisible={isTranscriptVisible} 
+              currentTranscript={currentTranscript} 
+              fullTranscript={fullTranscript} 
+              transcriptlocation={localAcq2Episode.transcriptlocation} 
+              isMainPage={true} 
+            />
+            <TranscriptDisplay 
+              currentTime={currentTime} 
+              onWordUpdate={setDisplayedWord} 
+              onSpeakerUpdate={setCurrentSpeaker} 
+              onSpeakersUpdate={setUniqueSpeakers} 
+              isVisible={false} 
+              onTranscriptUpdate={setCurrentTranscript} 
+              onFullTranscriptUpdate={setFullTranscript} 
+              transcriptlocation={localAcq2Episode.transcriptlocation}
+            />
           </div>
         </div>
       </div>
@@ -118,4 +147,5 @@ const Index = () => {
       <div className="pb-[120px]"></div>
     </div>;
 };
+
 export default Index;

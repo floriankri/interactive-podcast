@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { useConversationContext } from '@/contexts/ConversationContext';
 
 // Store both IDs as constants
-const KNOWLEDGE_BASE_ID = 'rjz49GhpLJMdN17SM35D';
-const AGENT_ID = 'H0AWbhV4Y9vbKXyEVk0G'; // Use one of your previously created agent IDs
+const KNOWLEDGE_BASE_ID = 'EjvuF5vO6bN2uZHHi5Ij';
+const AGENT_ID = 'gYZLIR4Qap3aCzXTgQYL'; // Use one of your previously created agent IDs
 
 export const ConversationInitializer = () => {
   const { setAgentId, setKnowledgeBaseId } = useConversationContext();

@@ -69,7 +69,7 @@ export const mockPodcastSeries: PodcastSeries[] = [
         duration: "2:54:56",
         audioUrl: "https://media.transistor.fm/9a264053/327df5d5.mp3",
         publishedAt: "Jan 27, 2025",
-        transcriptlocation: "/mostlyawesome podcast transcript.txt"
+        transcriptlocation: "/vercel_acq2_transcript.txt"
       },
       {
         id: 2,

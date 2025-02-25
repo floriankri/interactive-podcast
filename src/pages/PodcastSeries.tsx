@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Play, HelpCircle } from "lucide-react";
@@ -102,6 +101,8 @@ const PodcastSeries = () => {
           isTranscriptVisible={isTranscriptVisible}
           currentTranscript={currentTranscript}
           fullTranscript={fullTranscript}
+          transcriptlocation={selectedEpisode.transcriptlocation}
+          isMainPage={true}
         />
       )}
     </div>
